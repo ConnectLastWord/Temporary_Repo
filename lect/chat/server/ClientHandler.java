@@ -102,8 +102,7 @@ public class ClientHandler implements Runnable, MessageHandler {
                 break;
             case ChatCommandUtil.ROOM_LIST:
                 if (chatRoomName != null) {     // 기존 채팅방의 내 정보 삭제 후, 새로운 채팅방 생성
-                    GroupManager.removeMessageHandler(chatRoomName, this); // left
-                    GroupManager.broadcastLeftChatter(chatRoomName, this);   // list user
+                    GroupManager.removeMessageHandler(chatRoomName, this); // left// list user
                 }
                 chatRoomName = msg;
                 GroupManager.addChatRoom(chatRoomName);
