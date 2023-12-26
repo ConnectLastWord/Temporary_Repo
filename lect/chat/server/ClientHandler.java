@@ -85,10 +85,6 @@ public class ClientHandler implements Runnable, MessageHandler {
                 String msg_split[] = msg.split("\\|");
                 String roomName = msg_split[0];
                 String sendMsg = msg_split[1];
-                System.out.println("test------");
-                System.out.println(roomName);
-                System.out.println(sendMsg);
-                System.out.println("test------");
                 GroupManager.addChatRoom(roomName);
                 GroupManager.broadcastMessage(roomName, String.format("%s: %s", chatName, sendMsg));
                 break;
@@ -105,10 +101,9 @@ public class ClientHandler implements Runnable, MessageHandler {
                 GroupManager.sendWhisper(this, toId, String.format("%s: %s", chatName, msgToWhisper));
                 break;
             case ChatCommandUtil.ROOM_LIST:
-                String originChatRoomName = chatName;//사용자 이름
-                if (chatRoomName != null) {        // 기존 채팅방의 내 정보 삭제 후, 새로운 채팅방 생성
-                    GroupManager.removeMessageHandler(chatRoomName, this);
-                    GroupManager.broadcastNewChatter(chatRoomName, this);
+                if (chatRoomName != null) {     // 기존 채팅방의 내 정보 삭제 후, 새로운 채팅방 생성
+                    GroupManager.removeMessageHandler(chatRoomName, this); // left// list user
+
                 }
                 chatRoomName = msg;
                 GroupManager.addChatRoom(chatRoomName);
