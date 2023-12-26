@@ -27,28 +27,42 @@ public class GroupManager {
     }
 
     // 채팅방 내 사용자 삭제
-    public static void removeMessageHandler(String chatRoomName, MessageHandler handler) {
-        Vector<MessageHandler> room = roomGroup.get(chatRoomName);
-        room.remove(handler);
-        System.out.println("Active clients count: " + room.size());
-        for (MessageHandler mh : room) {
-            mh.sendMessage(createMessage(ChatCommandUtil.EXIT_ROOM, handler.getName() + " has just left chat room"));
-        }
+    public static void removeMessageHandler(String chatRoomName, MessageHandler newHandler) {
+        StringBuilder users = new StringBuilder();
+        Vector<MessageHandler> rooms = roomGroup.get(chatRoomName);
+        rooms.remove(newHandler);
+        System.out.println("Active clients count: " + rooms.size());
     }
 
-    // 채팅방 내 브로드캐스트 전파
-    public static void broadcastMessage(String roomName, String msg) {
-        Vector<MessageHandler> room = roomGroup.get(roomName);
-        for (MessageHandler handler : room) {
-            handler.sendMessage(createMessage(ChatCommandUtil.NORMAL, msg));
+    public static void broadcastLeftChatter(String roomName, MessageHandler newHandler) {
+        StringBuilder users = new StringBuilder();
+        // 해당 채팅방 (room)불러오기
+        Vector<MessageHandler> rooms = roomGroup.get(roomName);
+        //  사용자 한명
+        MessageHandler handler;
+        // 채팅방 인원수 파악
+        int size = rooms.size();
+        // 채팅방 내 사용자 반복수
+        for (int i = 0; i < size; i++) {
+            // 채팅방 내 사용자 1명 불러오기
+            handler = rooms.get(i);
+            users.append(handler.getName()).append(",")
+                    .append(handler.getId()).append(",")
+                    .append(handler.getFrom());
+            System.out.println(users);
+            if (i < (size - 1)) {
+                users.append("|");
+            }
         }
-    }
-
-    public static void closeAllMessageHandlers() {
-        for (MessageHandler handler : clientGroup) {
-            handler.close();
+        for (MessageHandler mh : rooms) {
+            if (mh != newHandler) {
+                // 퇴장 브로드캐스팅
+                mh.sendMessage(createMessage(ChatCommandUtil.EXIT_ROOM,
+                        newHandler.getName() + " has just left [" + roomName + "] room room"));
+            }
+            // List Of Users 브로드 캐스팅
+            mh.sendMessage(createMessage(ChatCommandUtil.USER_LIST, users.toString()));
         }
-        clientGroup.clear();
     }
 
     public static void broadcastNewChatter(String roomName, MessageHandler newHandler) {
@@ -80,6 +94,22 @@ public class GroupManager {
             // List Of Users 브로드 캐스팅
             mh.sendMessage(createMessage(ChatCommandUtil.USER_LIST, users.toString()));
         }
+    }
+
+
+    // 채팅방 내 브로드캐스트 전파
+    public static void broadcastMessage(String roomName, String msg) {
+        Vector<MessageHandler> room = roomGroup.get(roomName);
+        for (MessageHandler handler : room) {
+            handler.sendMessage(createMessage(ChatCommandUtil.NORMAL, msg));
+        }
+    }
+
+    public static void closeAllMessageHandlers() {
+        for (MessageHandler handler : clientGroup) {
+            handler.close();
+        }
+        clientGroup.clear();
     }
 
     public static void sendWhisper(MessageHandler from, String to, String msg) {

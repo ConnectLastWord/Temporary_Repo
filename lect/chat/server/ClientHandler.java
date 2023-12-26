@@ -105,15 +105,12 @@ public class ClientHandler implements Runnable, MessageHandler {
                 GroupManager.sendWhisper(this, toId, String.format("%s: %s", chatName, msgToWhisper));
                 break;
             case ChatCommandUtil.ROOM_LIST:
-                String originChatRoomName = chatName;
-                if (chatRoomName == null) {     // 첫 채팅방 입장 시, 채팅방 생성
-                    chatRoomName = msg;
-                    GroupManager.addChatRoom(chatRoomName);
-                } else {        // 기존 채팅방의 내 정보 삭제 후, 새로운 채팅방 생성
-                    GroupManager.removeMessageHandler(chatRoomName, this);
-                    chatRoomName = msg;
-                    GroupManager.addChatRoom(chatRoomName);
+                if (chatRoomName != null) {     // 기존 채팅방의 내 정보 삭제 후, 새로운 채팅방 생성
+                    GroupManager.removeMessageHandler(chatRoomName, this); // left
+                    GroupManager.broadcastLeftChatter(chatRoomName, this);   // list user
                 }
+                chatRoomName = msg;
+                GroupManager.addChatRoom(chatRoomName);
                 //  생성한 채팅방에 내 정보 등록
                 GroupManager.addMessageHandler(chatRoomName, this);
                 // 생성한 채팅방에 브로드캐스팅
