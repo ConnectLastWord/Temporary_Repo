@@ -32,6 +32,8 @@ public class GroupManager {
         Vector<MessageHandler> rooms = roomGroup.get(chatRoomName);
         rooms.remove(newHandler);
         System.out.println("Active clients count: " + rooms.size());
+
+        broadcastLeftChatter(chatRoomName,newHandler);
     }
 
     public static void broadcastLeftChatter(String roomName, MessageHandler newHandler) {
