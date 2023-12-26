@@ -13,7 +13,8 @@ public class ChatServer implements Runnable {
 
     public ChatServer(int port) throws IOException {
         ss = new ServerSocket(port);
-        System.out.printf("ChatServer[%s] is listening on port 8080\n", InetAddress.getLocalHost().getHostAddress());
+        System.out.printf("ChatServer[%s] is listening on port %d\n", InetAddress.getLocalHost().getHostAddress(),
+                port);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 try {

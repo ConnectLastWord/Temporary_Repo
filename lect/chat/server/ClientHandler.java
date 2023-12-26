@@ -85,10 +85,6 @@ public class ClientHandler implements Runnable, MessageHandler {
                 String msg_split[] = msg.split("\\|");
                 String roomName = msg_split[0];
                 String sendMsg = msg_split[1];
-                System.out.println("test------");
-                System.out.println(roomName);
-                System.out.println(sendMsg);
-                System.out.println("test------");
                 GroupManager.addChatRoom(roomName);
                 GroupManager.broadcastMessage(roomName, String.format("%s: %s", chatName, sendMsg));
                 break;
