@@ -26,7 +26,7 @@ public class ChatMessageReceiver implements Runnable, ChatSocketListener {
     public void run() {
         String msg;
         try {
-            while (connector.socketAvailable()) {
+            while (connector.socketAvailable()) { //소켓이 null이나 closed가 아닌 경우
                 msg = reader.readLine();
                 if (msg == null) {
                     System.out.println("Terminating ChatMessageReceiver: message received is null");

@@ -78,8 +78,9 @@ public class ClientHandler implements Runnable, MessageHandler {
     }
 
     public void processMessage(String msg) {
-        char command = ChatCommandUtil.getCommand(msg);
-        msg = msg.replaceFirst("\\[{1}[a-z]\\]{1}", "");
+        char command = ChatCommandUtil.getCommand(msg);// 첫번째 글자 떼옴
+        //msg = [b]채팅방- 2|massage
+        msg = msg.replaceFirst("\\[{1}[a-z]\\]{1}", "");// 첫번쨰 글자 없앰
         switch (command) {
             case ChatCommandUtil.NORMAL:
                 String msg_split[] = msg.split("\\|");
@@ -89,7 +90,7 @@ public class ClientHandler implements Runnable, MessageHandler {
                 GroupManager.broadcastMessage(roomName, String.format("%s: %s", chatName, sendMsg));
                 break;
             case ChatCommandUtil.INIT_ALIAS:
-                String nameWithId[] = msg.split("\\|");
+                String[] nameWithId = msg.split("\\|");
                 chatName = nameWithId[0];
                 id = nameWithId[1];
                 System.out.println("INIT_AS : " + chatName + " / " + id);
