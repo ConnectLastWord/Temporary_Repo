@@ -66,33 +66,34 @@ public class GroupManager {
     }
 
     public static void broadcastNewChatter(String roomName, MessageHandler newHandler) {
-        StringBuilder users = new StringBuilder();
+        StringBuilder userInfoStringBuilder = new StringBuilder();
         // 해당 채팅방 (room)불러오기
-        Vector<MessageHandler> rooms = roomGroup.get(roomName);
+        Vector<MessageHandler> users = roomGroup.get(roomName);
         //  사용자 한명
         MessageHandler handler;
         // 채팅방 인원수 파악
-        int size = rooms.size();
+        int size = users.size();
         // 채팅방 내 사용자 반복수
         for (int i = 0; i < size; i++) {
             // 채팅방 내 사용자 1명 불러오기
-            handler = rooms.get(i);
-            users.append(handler.getName()).append(",")
+            handler = users.get(i);
+            userInfoStringBuilder.append(handler.getName()).append(",")
                     .append(handler.getId()).append(",")
                     .append(handler.getFrom());
-            System.out.println(users);
+            System.out.println(userInfoStringBuilder);
             if (i < (size - 1)) {
-                users.append("|");
+                userInfoStringBuilder.append("|");
             }
         }
-        for (MessageHandler mh : rooms) {
+        for (MessageHandler mh : users) {
             if (mh != newHandler) {
                 // 입장 브로드캐스팅
                 mh.sendMessage(createMessage(ChatCommandUtil.ENTER_ROOM,
                         (newHandler.getName() + " has just entered [" + roomName + "] room")));
             }
             // List Of Users 브로드 캐스팅
-            mh.sendMessage(createMessage(ChatCommandUtil.USER_LIST, users.toString()));
+            // 서버에게 전송 ex) [d] userList
+            mh.sendMessage(createMessage(ChatCommandUtil.USER_LIST, userInfoStringBuilder.toString()));
         }
     }
 
@@ -125,12 +126,11 @@ public class GroupManager {
 
     static String createMessage(char command, String msg) {
         StringBuilder msgBuilder = new StringBuilder();
-        msgBuilder.delete(0, msgBuilder.length());
+        // msgBuilder.delete(0, msgBuilder.length());
         msgBuilder.append("[");
         msgBuilder.append(command);
         msgBuilder.append("]");
         msgBuilder.append(msg);
         return msgBuilder.toString();
-
     }
 }

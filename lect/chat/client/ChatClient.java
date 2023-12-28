@@ -22,7 +22,7 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
     private JFrame chatWindow;
 
     ChatClient() {
-        id = new java.rmi.server.UID().toString();
+        id = new java.rmi.server.UID().toString(); // uuid
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         ChatPanel chatPanel = new ChatPanel(this);
