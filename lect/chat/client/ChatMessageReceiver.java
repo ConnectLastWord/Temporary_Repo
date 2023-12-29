@@ -1,12 +1,13 @@
 package lect.chat.client;
 
+import lect.chat.client.event.ChatConnector;
+import lect.chat.client.event.ChatSocketListener;
+import lect.chat.client.event.MessageReceiver;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import lect.chat.client.event.ChatConnector;
-import lect.chat.client.event.ChatSocketListener;
-import lect.chat.client.event.MessageReceiver;
 
 // 채팅 기반 신호 리스너
 public class ChatMessageReceiver implements Runnable, ChatSocketListener {
@@ -28,6 +29,7 @@ public class ChatMessageReceiver implements Runnable, ChatSocketListener {
         try {
             while (connector.socketAvailable()) { //소켓이 null이나 closed가 아닌 경우
                 msg = reader.readLine();
+                System.out.println(msg);
                 if (msg == null) {
                     System.out.println("Terminating ChatMessageReceiver: message received is null");
                     break;
