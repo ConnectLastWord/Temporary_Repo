@@ -1,13 +1,8 @@
-package lect.chat.common;
+package lect.chat.client;
 
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
-import javax.swing.DefaultListModel;
-import javax.swing.DropMode;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
-import lect.chat.client.ChatRoom;
 
 @SuppressWarnings("serial")
 public class ChatRoomList extends JList {

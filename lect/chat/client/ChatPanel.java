@@ -1,25 +1,18 @@
 package lect.chat.client;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import lect.chat.client.event.ChatConnector;
+import lect.chat.client.event.ChatSocketListener;
+import lect.chat.client.event.MessageReceiver;
+import lect.chat.protocol.ChatCommandUtil;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import lect.chat.client.event.ChatConnector;
-import lect.chat.client.event.ChatSocketListener;
-import lect.chat.client.event.MessageReceiver;
-import lect.chat.common.ChatRoomList;
-import lect.chat.protocol.ChatCommandUtil;
 
 // 컴포넌트 기반 신호 리스너
 @SuppressWarnings("serial")
@@ -28,7 +21,6 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
     ChatTextPane chatDispArea;
     ChatUserList userList;
     ChatRoomList roomList;
-    // 유동적으로 변경할 채팅방;
     ChatRoom room;
     CommandButton connectDisconnect;
     JButton whisper;
@@ -149,11 +141,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
 
     public void messageArrived(String msg) {
         char command = ChatCommandUtil.getCommand(msg);
-        System.out.println("--messageArrived method--");
-        System.out.println(msg);
         msg = msg.replaceFirst("\\[{1}[a-z]\\]{1}", "");
-        System.out.println(msg);
-        System.out.println("--messageArrived method--");
         switch (command) {
             case ChatCommandUtil.NORMAL:
             case ChatCommandUtil.ENTER_ROOM:
@@ -191,6 +179,11 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 if (connector.connect()) {
                     connectDisconnect.toButton(CommandButton.CMD_DISCONNECT);
                 }
+                // 컴포넌트 비활성화
+                userList.setEnabled(false);
+                chatDispArea.setEnabled(false);
+                chatTextField.setEnabled(false);
+
             } else {// 신호가 Disconnect 일때
                 connector.disConnect();
                 connectDisconnect.toButton(CommandButton.CMD_CONNECT);
@@ -211,13 +204,23 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 sendMessage(ChatCommandUtil.WHISPER, String.format("%s|%s", userToWhisper.getId(), msgToSend));
                 chatTextField.setText("");
             } else {    //  채팅방 입장 버튼일때
-                room = (ChatRoom) roomList.getSelectedValue();
-                if (room == null) {
-                    JOptionPane.showMessageDialog(this, "Room to Enter to must be selected", "EnterChat",
-                            JOptionPane.WARNING_MESSAGE);
+                if (roomList.getSelectedValue() != room) {
+                    room = (ChatRoom) roomList.getSelectedValue();
+                    if (room == null) {
+                        JOptionPane.showMessageDialog(this, "Room to Enter to must be selected", "EnterChat",
+                                JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    sendMessage(ChatCommandUtil.ROOM_LIST, room.getName());
+                    // 컴포넌트 활성화
+                    userList.setEnabled(true);
+                    chatDispArea.setEnabled(true);
+                    chatTextField.setEnabled(true);
+                    chatDispArea.initDisplay();
                     return;
                 }
-                sendMessage(ChatCommandUtil.ROOM_LIST, room.getName());
+                JOptionPane.showMessageDialog(this, "이미 접속해있는 방입니다.", "ChatRoom",
+                        JOptionPane.WARNING_MESSAGE);
             }
         }
     }
@@ -231,6 +234,10 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         userList.setEnabled(false);
         // 채팅방 목록 비활성화
         roomList.setEnabled(false);
+        // 모든 유저 삭제
+        userList.removeAllUsers();
+        // 채팅창 초기화
+        chatDispArea.initDisplay();
         connectDisconnect.toButton(CommandButton.CMD_CONNECT);
     }
 
@@ -253,22 +260,17 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
     private void displayUserList(String users) {
         //format should be like 'name1,id1,host1|name2,id2,host2|...'
         //System.out.println(users);
-        System.out.println("displayUsersList");
         String[] strUsers = users.split("\\|");
         String[] nameWithIdHost;
         ArrayList<ChatUser> list = new ArrayList<ChatUser>();
-        System.out.println("start for 문");
         for (String strUser : strUsers) {
             nameWithIdHost = strUser.split(",");
-            System.out.println(strUser);
             if (connector.getId().equals(nameWithIdHost[1])) {
                 continue;
             }
-            System.out.println(strUser);
             list.add(new ChatUser(nameWithIdHost[0], nameWithIdHost[1], nameWithIdHost[2]));
         }
         userList.addNewUsers(list);
-        System.out.println(list.size());
     }
 
     private void displayRoomList(String rooms) {
@@ -296,6 +298,5 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         msgBuilder.append("]");
         msgBuilder.append(msg);
         return msgBuilder.toString();
-
     }
 }

@@ -1,18 +1,15 @@
 package lect.chat.client;
 
-import java.awt.BorderLayout;
+import lect.chat.client.event.ChatConnector;
+import lect.chat.client.event.ChatSocketListener;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import lect.chat.client.event.ChatConnector;
-import lect.chat.client.event.ChatSocketListener;
-import lect.chat.client.p2p.P2P;
 
 public class ChatClient extends WindowAdapter implements ChatConnector {
     private Socket socket;
@@ -47,11 +44,12 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
 
         this.addChatSocketListener(chatPanel);
         this.addChatSocketListener(chatReceiver);
-        try {
-            P2P.getInstance().startService();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // 파일 전송 P2P 부분 주석
+//        try {
+//            P2P.getInstance().startService();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

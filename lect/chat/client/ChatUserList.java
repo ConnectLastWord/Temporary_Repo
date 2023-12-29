@@ -1,20 +1,15 @@
 package lect.chat.client;
 
-import java.awt.Component;
+import lect.chat.client.p2p.FileSender;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.DefaultListModel;
-import javax.swing.DropMode;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
-import javax.swing.TransferHandler;
-import lect.chat.client.p2p.FileSender;
 
 @SuppressWarnings("serial")
 public class ChatUserList extends JList {
@@ -34,6 +29,12 @@ public class ChatUserList extends JList {
             newModel.addElement(user);
         }
         setModel(newModel);
+    }
+
+    // 모든 userList 삭제
+    public void removeAllUsers() {
+        DefaultListModel model = (DefaultListModel) getModel();
+        model.removeAllElements();
     }
 
     class CellRenderer extends JLabel implements ListCellRenderer {
@@ -72,15 +73,15 @@ public class ChatUserList extends JList {
 
     public class UserListTransferHandler extends TransferHandler {
         public boolean canImport(TransferHandler.TransferSupport info) {
-			if (!info.isDrop()) {
-				return false;
-			}
+            if (!info.isDrop()) {
+                return false;
+            }
             JList list = (JList) info.getComponent();
             JList.DropLocation dLoc = (JList.DropLocation) info.getDropLocation();
             int idxOverJList = dLoc.getIndex();
-			if (idxOverJList == -1) {
-				return false;
-			}
+            if (idxOverJList == -1) {
+                return false;
+            }
             list.setSelectedIndex(dLoc.getIndex());
             // DataFlavor [] flavors = info.getDataFlavors();
             return (info.isDataFlavorSupported(DataFlavor.javaFileListFlavor));
