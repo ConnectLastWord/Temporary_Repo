@@ -2,109 +2,82 @@ package lect.chat.server;
 
 import lect.chat.protocol.ChatCommandUtil;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
+// GroupManager roomList객체만 관리 / MessageHandler는 관리 x
 public class GroupManager {
-    private static Map<String, Vector<MessageHandler>> roomGroup = new HashMap<String, Vector<MessageHandler>>();
+    // Duck[] arr;
+    private static List<Group> roomList = new ArrayList<>();
     private static Vector<MessageHandler> clientGroup = new Vector<MessageHandler>();
 
     private GroupManager() {
     }
 
     // 채팅방 생성 있는 채팅방이면 생성
+    // 매개변수 = 채팅방 이름
     public static void addChatRoom(String msg) {
-        if (!roomGroup.keySet().contains(msg)) {
-            roomGroup.put(msg, new Vector<MessageHandler>());
+        // 채팅방 존재 여부 (기본 값 = false)
+        boolean isContains = false;
+        for (Group g : roomList) {
+            // 매개변수 값과 채팅방 이름이 같으면 존재 여부 true 변경
+            if (g.getGroupName().equals(msg)) {
+                isContains = true;
+                return;
+            }
         }
+        // for문에서 존재 여부 값이 변하지 않으면 채팅방 생성 후 roomList 추가
+        roomList.add(new Group(msg));
     }
 
     // 채팅방 내 사용자 추가
     public static void addMessageHandler(String roomName, MessageHandler handler) {
-        Vector<MessageHandler> users = roomGroup.get(roomName);
-        users.add(handler);
-        System.out.println("Active clients count: " + users.size());
+        for (Group g : roomList) {
+            if (g.getGroupName().equals(roomName)) {
+                g.addUser(handler);
+                return;
+            }
+        }
     }
 
     // 채팅방 내 사용자 삭제
-    public static void removeMessageHandler(String chatRoomName, MessageHandler newHandler) {
-        Vector<MessageHandler> users = roomGroup.get(chatRoomName);
-        // null 유효성 검사
-        if (users != null) {
-            users.remove(newHandler);
-            System.out.println("Active clients count: " + users.size());
+    public static void removeMessageHandler(String roomName, MessageHandler handler) {
+        for (Group g : roomList) {
+            if (g.getGroupName().equals(roomName)) {
+                g.removeUser(handler);
+                return;
+            }
         }
     }
 
-    public static void broadcastLeftChatter(String roomName, MessageHandler newHandler) {
-        StringBuilder userList = new StringBuilder();
-        // 해당 채팅방 (room)불러오기
-        Vector<MessageHandler> users = roomGroup.get(roomName);
-        //  사용자 한명
-        MessageHandler handler;
-        // 채팅방 인원수 파악
-        int size = users.size();
-        // 채팅방 내 사용자 반복수
-        for (int i = 0; i < size; i++) {
-            // 채팅방 내 사용자 1명 불러오기
-            handler = users.get(i);
-            userList.append(handler.getName()).append(",")
-                    .append(handler.getId()).append(",")
-                    .append(handler.getFrom());
-            System.out.println(userList);
-            if (i < (size - 1)) {
-                userList.append("|");
+    // 퇴장 메시지 브로드캐스트
+    public static void broadcastLeftChatter(String roomName, MessageHandler handler) {
+        for (Group g : roomList) {
+            if (g.getGroupName().equals(roomName)) {
+                g.broadCastLeftChatter(handler);
+                return;
             }
-        }
-        for (MessageHandler mh : users) {
-            if (mh != newHandler) {
-                // 퇴장 브로드캐스팅
-                mh.sendMessage(createMessage(ChatCommandUtil.EXIT_ROOM,
-                        newHandler.getName() + " has just left [" + roomName + "] room room"));
-            }
-            // List Of Users 브로드 캐스팅
-            mh.sendMessage(createMessage(ChatCommandUtil.USER_LIST, userList.toString()));
         }
     }
 
     public static void broadcastNewChatter(String roomName, MessageHandler newHandler) {
-        StringBuilder userList = new StringBuilder();
-        // 해당 채팅방 (room)불러오기
-        Vector<MessageHandler> users = roomGroup.get(roomName);
-        //  사용자 한명
-        MessageHandler handler;
-        // 채팅방 인원수 파악
-        int size = users.size();
-        // 채팅방 내 사용자 반복수
-        for (int i = 0; i < size; i++) {
-            // 채팅방 내 사용자 1명 불러오기
-            handler = users.get(i);
-            userList.append(handler.getName()).append(",")
-                    .append(handler.getId()).append(",")
-                    .append(handler.getFrom());
-
-            if (i < (size - 1)) {
-                userList.append("|");
+        for (Group g : roomList) {
+            if (g.getGroupName().equals(roomName)) {
+                g.broadcastNewChatter(newHandler);
+                return;
             }
-        }
-        for (MessageHandler mh : users) {
-            if (mh != newHandler) {
-                // 입장 브로드캐스팅
-                mh.sendMessage(createMessage(ChatCommandUtil.ENTER_ROOM,
-                        (newHandler.getName() + " has just entered [" + roomName + "] room")));
-            }
-            // List Of Users 브로드 캐스팅
-            mh.sendMessage(createMessage(ChatCommandUtil.USER_LIST, userList.toString()));
         }
     }
 
 
     // 채팅방 내 브로드캐스트 전파
     public static void broadcastMessage(String roomName, String msg) {
-        Vector<MessageHandler> users = roomGroup.get(roomName);
-        for (MessageHandler handler : users) {
-            handler.sendMessage(createMessage(ChatCommandUtil.NORMAL, msg));
+        for (Group g : roomList) {
+            if (g.getGroupName().equals(roomName)) {
+                g.broadcastMessage(msg);
+                return;
+            }
         }
     }
 
