@@ -187,6 +187,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             } else {// 신호가 Disconnect 일때
                 connector.disConnect();
                 connectDisconnect.toButton(CommandButton.CMD_CONNECT);
+                room = null;
             }
         } else {// 귓속말 버튼일때
             if (e.getActionCommand().equals("Whisper")) {
