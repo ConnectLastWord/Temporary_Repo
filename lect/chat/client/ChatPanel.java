@@ -139,16 +139,14 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         add(enterChat, c);
     }
 
+    // 서버로부터 받은 응답 처리
     public void messageArrived(String msg) {
         char command = ChatCommandUtil.getCommand(msg);
         msg = msg.replaceFirst("\\[{1}[a-z]\\]{1}", "");
         switch (command) {
-            case ChatCommandUtil.NORMAL:
-            case ChatCommandUtil.ENTER_ROOM:
-            case ChatCommandUtil.WHISPER:
-            case ChatCommandUtil.EXIT_ROOM:
-                chatDispArea.append(msg + "\n", command);
-                break;
+//            case ChatCommandUtil.EXIT_ROOM:
+//                chatDispArea.append(msg + "\n", command);
+//                break;
             case ChatCommandUtil.USER_LIST:
                 displayUserList(msg);
                 break;
@@ -160,7 +158,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         }
     }
 
-    // 클라이언트로부터 신호가 들어왔을 때
+    // 클라이언트(컴포넌트 신호)로부터 신호가 들어왔을 때
     public void actionPerformed(ActionEvent e) {
         Object sourceObj = e.getSource();
         if (sourceObj == chatTextField) {
