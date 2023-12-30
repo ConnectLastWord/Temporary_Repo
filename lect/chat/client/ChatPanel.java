@@ -144,9 +144,11 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         char command = ChatCommandUtil.getCommand(msg);
         msg = msg.replaceFirst("\\[{1}[a-z]\\]{1}", "");
         switch (command) {
-//            case ChatCommandUtil.EXIT_ROOM:
-//                chatDispArea.append(msg + "\n", command);
-//                break;
+            case ChatCommandUtil.NORMAL:
+            case ChatCommandUtil.ENTER_ROOM:
+            case ChatCommandUtil.EXIT_ROOM:
+                chatDispArea.append(msg + "\n", command);
+                break;
             case ChatCommandUtil.USER_LIST:
                 displayUserList(msg);
                 break;
