@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Vector;
 
 public class GroupManager {
-    private static Map<String, Vector<MessageHandler>> roomGroup = new HashMap<String, Vector<MessageHandler>>();
-    private static Vector<MessageHandler> clientGroup = new Vector<MessageHandler>();
+    private static Map<String, Vector<MessageHandler>> roomGroup = new HashMap<>();
+    private static Vector<MessageHandler> clientGroup = new Vector<>();
 
     private GroupManager() {
     }
@@ -113,17 +113,6 @@ public class GroupManager {
             handler.close();
         }
         clientGroup.clear();
-    }
-
-    public static void sendWhisper(MessageHandler from, String to, String msg) {
-        msg = createMessage(ChatCommandUtil.WHISPER, msg);
-        for (MessageHandler handler : clientGroup) {
-            if (handler.getId().equals(to)) {
-                handler.sendMessage(msg);
-                break;
-            }
-        }
-        from.sendMessage(msg);
     }
 
     static String createMessage(char command, String msg) {

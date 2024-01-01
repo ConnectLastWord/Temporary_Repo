@@ -1,7 +1,6 @@
 package lect.chat.protocol;
 
 public class ChatCommandUtil {
-    public static final char WHISPER = 'a';// 귓속말
     public static final char NORMAL = 'b';// 채팅
     public static final char INIT_ALIAS = 'c'; //닉네임 생성
     public static final char USER_LIST = 'd';
