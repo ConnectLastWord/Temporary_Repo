@@ -24,8 +24,6 @@ public class ClientHandler implements Runnable, MessageHandler {
         br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         // 사용자 출력을 위한 빨대 생성
         pw = new PrintWriter(socket.getOutputStream(), true);
-        // addMessageHandler로 사용자 소켓을 전달
-//        GroupManager.addMessageHandler(this);
     }
 
     public void run() {
@@ -38,12 +36,10 @@ public class ClientHandler implements Runnable, MessageHandler {
                 }
                 processMessage(msg);
                 System.out.println("lineRead: " + msg);
-                //GroupManager.broadcastMessage(msg);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            System.out.println("종료?" + chatRoomName);
             GroupManager.removeMessageHandler(chatRoomName, this);
             GroupManager.broadcastLeftChatter(chatRoomName, this);
             close();
@@ -56,7 +52,6 @@ public class ClientHandler implements Runnable, MessageHandler {
     }
 
     public String getMessage() throws IOException {
-        // msg example : [c]woo|-55cf9d44:18c90bce87e:-8000
         return br.readLine();
     }
 
@@ -97,7 +92,6 @@ public class ClientHandler implements Runnable, MessageHandler {
                 chatName = nameWithId[0];
                 id = nameWithId[1];
                 System.out.println("INIT_AS : " + chatName + " / " + id);
-//                GroupManager.broadcastNewChatter(chatRoomName, this);
                 break;
             case ChatCommandUtil.ROOM_LIST:
                 if (chatRoomName != null) {     // 기존 채팅방의 내 정보 삭제 후, 새로운 채팅방 생성

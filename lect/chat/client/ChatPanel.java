@@ -139,6 +139,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         add(enterChat, c);
     }
 
+    // 서버로부터 받은 응답 처리
     public void messageArrived(String msg) {
         char command = ChatCommandUtil.getCommand(msg);
         msg = msg.replaceFirst("\\[{1}[a-z]\\]{1}", "");
@@ -159,7 +160,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         }
     }
 
-    // 클라이언트로부터 신호가 들어왔을 때
+    // 클라이언트(컴포넌트 신호)로부터 신호가 들어왔을 때
     public void actionPerformed(ActionEvent e) {
         Object sourceObj = e.getSource();
         if (sourceObj == chatTextField) {
@@ -186,6 +187,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             } else {// 신호가 Disconnect 일때
                 connector.disConnect();
                 connectDisconnect.toButton(CommandButton.CMD_CONNECT);
+                room = null;
             }
         } else {
             // 챗방 클리어 버튼일때
