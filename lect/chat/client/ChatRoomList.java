@@ -11,10 +11,8 @@ public class ChatRoomList extends JList {
         this.setCellRenderer(new CellRenderer());
         DefaultListModel model = (DefaultListModel) getModel();
         model.addElement(null);
-
         this.setDropMode(DropMode.ON);
         createDefaultRooms();
-//        this.setTransferHandler(new ChatRoomList.RoomListTransferHandler());
     }
 
     // 기본 채팅 3개 생성
@@ -23,7 +21,6 @@ public class ChatRoomList extends JList {
         rooms.add(new ChatRoom("채팅방- 1"));
         rooms.add(new ChatRoom("채팅방- 2"));
         rooms.add(new ChatRoom("채팅방- 3"));
-
         addNewRooms(rooms);
     }
 
