@@ -11,8 +11,8 @@ import java.net.Socket;
 // 사용자 메시지를 전달하기 위한 구현체 = 하나의 클라이언트와 통신하기 위한 객체, 스레드
 public class ClientHandler implements Runnable, MessageHandler {
     private Socket socket;
-    BufferedReader br = null;
-    PrintWriter pw = null;
+    BufferedReader br;
+    PrintWriter pw;
     private String chatName, id, host, chatRoomName;
 
     public ClientHandler(Socket s) throws IOException {
@@ -81,9 +81,9 @@ public class ClientHandler implements Runnable, MessageHandler {
         msg = msg.replaceFirst("\\[{1}[a-z]\\]{1}", "");// 첫번쨰 글자 없앰
         switch (command) {
             case ChatCommandUtil.NORMAL:
-                String msg_split[] = msg.split("\\|");
-                String roomName = msg_split[0];
-                String sendMsg = msg_split[1];
+                String[] msgSplit = msg.split("\\|");
+                String roomName = msgSplit[0];
+                String sendMsg = msgSplit[1];
                 GroupManager.addChatRoom(roomName);
                 GroupManager.broadcastMessage(roomName, String.format("%s: %s", chatName, sendMsg));
                 break;
@@ -92,11 +92,6 @@ public class ClientHandler implements Runnable, MessageHandler {
                 chatName = nameWithId[0];
                 id = nameWithId[1];
                 System.out.println("INIT_AS : " + chatName + " / " + id);
-                break;
-            case ChatCommandUtil.WHISPER:
-                String toId = msg.substring(0, msg.indexOf('|'));
-                String msgToWhisper = msg.substring(msg.indexOf('|') + 1);
-                GroupManager.sendWhisper(this, toId, String.format("%s: %s", chatName, msgToWhisper));
                 break;
             case ChatCommandUtil.ROOM_LIST:
                 if (chatRoomName != null) {     // 기존 채팅방의 내 정보 삭제 후, 새로운 채팅방 생성

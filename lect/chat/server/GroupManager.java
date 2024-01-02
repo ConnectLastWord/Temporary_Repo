@@ -1,7 +1,5 @@
 package lect.chat.server;
 
-import lect.chat.protocol.ChatCommandUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -86,17 +84,6 @@ public class GroupManager {
             handler.close();
         }
         clientGroup.clear();
-    }
-
-    public static void sendWhisper(MessageHandler from, String to, String msg) {
-        msg = createMessage(ChatCommandUtil.WHISPER, msg);
-        for (MessageHandler handler : clientGroup) {
-            if (handler.getId().equals(to)) {
-                handler.sendMessage(msg);
-                break;
-            }
-        }
-        from.sendMessage(msg);
     }
 
     static String createMessage(char command, String msg) {

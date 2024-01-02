@@ -23,7 +23,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
     ChatRoomList roomList;
     ChatRoom room;
     CommandButton connectDisconnect;
-    JButton whisper;
+    JButton clearChat;
     // 입장 버튼
     JButton enterChat;
     PrintWriter writer;
@@ -36,7 +36,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         connector = c;
         chatTextField.addActionListener(this);
         connectDisconnect.addActionListener(this);
-        whisper.addActionListener(this);
+        clearChat.addActionListener(this);
         enterChat.addActionListener(this);
     }
 
@@ -47,13 +47,13 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         roomList = new ChatRoomList();
 
         connectDisconnect = new CommandButton();
-        whisper = new JButton("Whisper");
+        clearChat = new JButton("ClearChat");
         // 입장 버튼
         enterChat = new JButton("EnterChat");
 
         chatTextField.setEnabled(false);
         chatDispArea.setEditable(false);
-        whisper.setEnabled(false);
+        clearChat.setEnabled(false);
         enterChat.setEnabled(false);
         userList.setEnabled(false);
         roomList.setEnabled(false);
@@ -130,7 +130,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         c.gridy = 2;
         c.gridx = 2;
         c.anchor = GridBagConstraints.CENTER;
-        add(whisper, c);
+        add(clearChat, c);
 
         c = new GridBagConstraints();
         c.gridy = 2;
@@ -165,7 +165,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         Object sourceObj = e.getSource();
         if (sourceObj == chatTextField) {
             String msgToSend = chatTextField.getText();
-            if (msgToSend.trim().equals("")) {
+            if (msgToSend.trim().isEmpty()) {
                 return;
             }
             if (connector.socketAvailable()) {
@@ -189,21 +189,10 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 connectDisconnect.toButton(CommandButton.CMD_CONNECT);
                 room = null;
             }
-        } else {// 귓속말 버튼일때
-            if (e.getActionCommand().equals("Whisper")) {
-                // 귓속말 받을 사람
-                ChatUser userToWhisper = (ChatUser) userList.getSelectedValue();
-                if (userToWhisper == null) {
-                    JOptionPane.showMessageDialog(this, "User to whisper to must be selected", "Whisper",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-                String msgToSend = chatTextField.getText();
-                if (msgToSend.trim().equals("")) {
-                    return;
-                }
-                sendMessage(ChatCommandUtil.WHISPER, String.format("%s|%s", userToWhisper.getId(), msgToSend));
-                chatTextField.setText("");
+        } else {
+            // 챗방 클리어 버튼일때
+            if (e.getActionCommand().equals("ClearChat")) {
+                chatDispArea.initDisplay();
             } else {    //  채팅방 입장 버튼일때
                 if (roomList.getSelectedValue() != room) {
                     room = (ChatRoom) roomList.getSelectedValue();
@@ -229,7 +218,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
     public void socketClosed() {
         chatTextField.setEnabled(false);
         chatDispArea.setEnabled(false);
-        whisper.setEnabled(false);
+        clearChat.setEnabled(false);
         // 입장 버튼 비활성화
         enterChat.setEnabled(false);
         userList.setEnabled(false);
@@ -250,7 +239,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 String.format("%s|%s", connector.getName(), connector.getId())));
         chatTextField.setEnabled(true);
         chatDispArea.setEnabled(true);
-        whisper.setEnabled(true);
+        clearChat.setEnabled(true);
         // 입장 버튼 활성화
         enterChat.setEnabled(true);
         userList.setEnabled(true);
@@ -263,7 +252,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         //System.out.println(users);
         String[] strUsers = users.split("\\|");
         String[] nameWithIdHost;
-        ArrayList<ChatUser> list = new ArrayList<ChatUser>();
+        ArrayList<ChatUser> list = new ArrayList<>();
         for (String strUser : strUsers) {
             nameWithIdHost = strUser.split(",");
             if (connector.getId().equals(nameWithIdHost[1])) {

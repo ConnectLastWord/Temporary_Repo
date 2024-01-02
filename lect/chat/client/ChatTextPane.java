@@ -1,6 +1,5 @@
 package lect.chat.client;
 
-import lect.chat.client.p2p.FileReceiver;
 import lect.chat.client.p2p.event.FileProgressListener;
 import lect.chat.protocol.ChatCommandUtil;
 
@@ -14,12 +13,11 @@ import java.text.SimpleDateFormat;
 
 public class ChatTextPane extends JTextPane implements FileProgressListener {
     private static final long serialVersionUID = 1L;
-    private SimpleDateFormat formatter = new SimpleDateFormat("MMdd_HH_mm_ss");
+    private final SimpleDateFormat formatter = new SimpleDateFormat("MMdd_HH_mm_ss");
     AttributeSet normalAttrSet;
-    AttributeSet whisperAttrSet;
     AttributeSet enterExitAttrSet;
-    private int linesToHold = 20;
-    private int maxLines = 40;
+    private final int linesToHold = 20;
+    private final int maxLines = 40;
     private boolean recordRemovedMsg = true;
     private JProgressBar curActiveProgressBar;
 
@@ -27,7 +25,6 @@ public class ChatTextPane extends JTextPane implements FileProgressListener {
         StyleContext sc = StyleContext.getDefaultStyleContext();
         normalAttrSet = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.DARK_GRAY);
 
-        //attSet = sc.addAttribute(attSet, StyleConstants.FontFamily, "Lucida Console");
         normalAttrSet = sc.addAttribute(normalAttrSet, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
 
         sc = new StyleContext();
@@ -35,12 +32,6 @@ public class ChatTextPane extends JTextPane implements FileProgressListener {
         enterExitAttrSet = sc.addAttribute(enterExitAttrSet, StyleConstants.FontFamily, "Lucida Console");
         enterExitAttrSet = sc.addAttribute(enterExitAttrSet, StyleConstants.Italic, true);
         enterExitAttrSet = sc.addAttribute(enterExitAttrSet, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
-
-        sc = new StyleContext();
-        whisperAttrSet = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.PINK);
-        //whisperAttrSet = sc.addAttribute(whisperAttrSet, StyleConstants.FontFamily, "Lucida Console");
-        whisperAttrSet = sc.addAttribute(whisperAttrSet, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
-        FileReceiver.addFileProgressListener(this);
     }
 
     // 채팅창 초기화
@@ -51,9 +42,6 @@ public class ChatTextPane extends JTextPane implements FileProgressListener {
     public void append(String msg, char command) {
         AttributeSet attrset;
         switch (command) {
-            case ChatCommandUtil.WHISPER:
-                attrset = whisperAttrSet;
-                break;
             case ChatCommandUtil.ENTER_ROOM:
             case ChatCommandUtil.EXIT_ROOM:
                 attrset = enterExitAttrSet;
@@ -87,7 +75,7 @@ public class ChatTextPane extends JTextPane implements FileProgressListener {
     public void setRecordRemovedMsg(boolean rrm) {
         recordRemovedMsg = rrm;
     }
-
+//TODO 지우기
     private void saveBeforeRemove(int len) throws BadLocationException {
         String contentToSave = getText(0, len);
         FileWriter fw = null;
