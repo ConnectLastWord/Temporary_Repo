@@ -234,6 +234,16 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             // 채팅방 생성 버튼
             else{
                String chatName = JOptionPane.showInputDialog("Enter create chatRoom name:");
+               if (chatName==null){
+                   return;
+               }
+               if (chatName.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "방 이름은 공백이 안됩니다", "Faild Create ChatRoom",
+                            JOptionPane.WARNING_MESSAGE);
+               }
+               if (connector.socketAvailable()) {
+                    sendMessage(ChatCommandUtil.CREATE_ROOM, chatName);
+                }
             }
         }
 

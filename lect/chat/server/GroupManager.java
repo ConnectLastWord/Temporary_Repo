@@ -8,7 +8,7 @@ import java.util.Vector;
 public class GroupManager {
     // Duck[] arr;
     private static List<Group> roomList = new ArrayList<>();
-    private static Vector<MessageHandler> clientGroup = new Vector<MessageHandler>();
+    private static Vector<MessageHandler> clientGroup = new Vector<>();
 
     private GroupManager() {
     }
@@ -27,6 +27,7 @@ public class GroupManager {
         }
         // for문에서 존재 여부 값이 변하지 않으면 채팅방 생성 후 roomList 추가
         roomList.add(new Group(msg));
+        System.out.println(roomList.size());
     }
 
     // 채팅방 내 사용자 추가
