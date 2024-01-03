@@ -212,7 +212,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             // 챗방 클리어 버튼일때
             if (e.getActionCommand().equals("ClearChat")) {
                 chatDispArea.initDisplay();
-            } else if (e.getActionCommand().equals("EneterChat"))  {  //  채팅방 입장 버튼일때
+            } else if (e.getActionCommand().equals("EnterChat"))  {  //  채팅방 입장 버튼일때
                 if (roomList.getSelectedValue() != room) {
                     room = (ChatRoom) roomList.getSelectedValue();
                     if (room == null) {
