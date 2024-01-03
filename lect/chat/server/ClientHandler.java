@@ -105,6 +105,13 @@ public class ClientHandler implements Runnable, MessageHandler {
                 GroupManager.broadcastNewChatter(chatRoomName, this);
                 break;
             case ChatCommandUtil.CREATE_ROOM:
+                if(GroupManager.isinGroup(msg)) {
+                    System.out.println(msg);
+                    this.sendMessage(GroupManager.createMessage(ChatCommandUtil.CREATE_ROOM, "이미 존재하는 채팅방"));
+                }else {
+                    GroupManager.addChatRoom(msg);
+                }
+
                 break;
             default:
                 System.out.printf("ChatCommand %c \n", command);
