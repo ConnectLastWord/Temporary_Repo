@@ -12,7 +12,6 @@ public class ChatRoomList extends JList {
         DefaultListModel model = (DefaultListModel) getModel();
         model.addElement(null);
         this.setDropMode(DropMode.ON);
-//        createDefaultRooms();
     }
 
     // 기본 채팅 3개 생성
