@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class ChatClient2 extends WindowAdapter implements ChatConnector {
     private Socket socket;
-    private String chatName;
+    private String userName;
     private String id;
     private ArrayList<ChatSocketListener> sListeners = new ArrayList<ChatSocketListener>();
     private JFrame chatWindow;
@@ -25,10 +25,10 @@ public class ChatClient2 extends WindowAdapter implements ChatConnector {
         contentPane.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         ChatPanel chatPanel = new ChatPanel(this);
         chatPanel.setBorder(BorderFactory.createEtchedBorder());
-        StatusBar status = StatusBar.getStatusBar();
-        status.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+        StatusBar statusBar = StatusBar.getStatusBar();
+        statusBar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
                 BorderFactory.createEmptyBorder(1, 2, 2, 2)));
-        contentPane.add(status, BorderLayout.SOUTH);
+        contentPane.add(statusBar, BorderLayout.SOUTH);
         ChatMessageReceiver chatReceiver = new ChatMessageReceiver(this);
         chatReceiver.setMessageReceiver(chatPanel);
 
@@ -45,12 +45,6 @@ public class ChatClient2 extends WindowAdapter implements ChatConnector {
 
         this.addChatSocketListener(chatPanel);
         this.addChatSocketListener(chatReceiver);
-        // 파일 전송 P2P 부분 주석
-//        try {
-//            P2P.getInstance().startService();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     @Override
@@ -58,17 +52,19 @@ public class ChatClient2 extends WindowAdapter implements ChatConnector {
         if (socketAvailable()) {
             return true;
         }
-        chatName = JOptionPane.showInputDialog(chatWindow, "Enter chat name:");
-        if (chatName == null) {
-            return false;
-        }
-
         try {
             socket = new Socket("127.0.0.1", 8081);
             for (ChatSocketListener lsnr : sListeners) {
                 lsnr.socketConnected(socket);
             }
-            return true;
+            userName = JOptionPane.showInputDialog(chatWindow, "Enter user name:");
+            if (userName == null) {
+                return false;
+            }else {
+                StatusBar statusBar = StatusBar.getStatusBar();
+                statusBar.setUserName(userName);
+                return true;
+            }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Failed to connect chat server", "Eror", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -105,7 +101,7 @@ public class ChatClient2 extends WindowAdapter implements ChatConnector {
 
     @Override
     public String getName() {
-        return chatName;
+        return userName;
     }
 
     @Override
@@ -127,6 +123,6 @@ public class ChatClient2 extends WindowAdapter implements ChatConnector {
     }
 
     public static void main(String[] args) throws Exception {
-        new ChatClient();
+        new ChatClient2();
     }
 }
