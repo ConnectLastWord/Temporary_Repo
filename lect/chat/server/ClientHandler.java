@@ -105,14 +105,6 @@ public class ClientHandler implements Runnable, MessageHandler {
                 GroupManager.broadcastNewChatter(chatRoomName, this);
                 break;
             case ChatCommandUtil.CREATE_ROOM:
-                        if (!msg.isEmpty()) {
-                            chatRoomName = msg;
-                            GroupManager.addChatRoom(chatRoomName);
-                            //  생성한 채팅방에 내 정보 등록
-                            GroupManager.addMessageHandler(chatRoomName, this);
-                            // 생성한 채팅방에 브로드캐스팅
-                            GroupManager.broadcastNewChatter(chatRoomName, this);
-                        }
                 break;
             default:
                 System.out.printf("ChatCommand %c \n", command);
