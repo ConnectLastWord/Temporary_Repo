@@ -1,24 +1,18 @@
 package lect.chat.client;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import lect.chat.client.event.ChatConnector;
+import lect.chat.client.event.ChatSocketListener;
+import lect.chat.client.event.MessageReceiver;
+import lect.chat.protocol.ChatCommandUtil;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import lect.chat.client.event.ChatConnector;
-import lect.chat.client.event.ChatSocketListener;
-import lect.chat.client.event.MessageReceiver;
-import lect.chat.protocol.ChatCommandUtil;
 
 // 컴포넌트 기반 신호 리스너
 @SuppressWarnings("serial")
@@ -215,7 +209,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             // 챗방 클리어 버튼일때
             if (e.getActionCommand().equals("ClearChat")) {
                 chatDispArea.initDisplay();
-            } else if (e.getActionCommand().equals("EnterChat"))  {  //  채팅방 입장 버튼일때
+            } else if (e.getActionCommand().equals("EnterChat")) {  //  채팅방 입장 버튼일때
                 if (roomList.getSelectedValue() != room) {
                     room = (ChatRoom) roomList.getSelectedValue();
                     if (room == null) {
@@ -235,16 +229,16 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                         JOptionPane.WARNING_MESSAGE);
             }
             // 채팅방 생성 버튼
-            else{
-               String chatName = JOptionPane.showInputDialog("Enter create chatRoom name:");
-               if (chatName==null){
-                   return;
-               }
-               if (chatName.trim().isEmpty()) {
+            else {
+                String chatName = JOptionPane.showInputDialog("Enter create chatRoom name:");
+                if (chatName == null) {
+                    return;
+                }
+                if (chatName.trim().isEmpty()) {
                     JOptionPane.showMessageDialog(this, "방 이름은 공백이 안됩니다", "Faild Create ChatRoom",
                             JOptionPane.WARNING_MESSAGE);
-               }
-               if (connector.socketAvailable()) {
+                }
+                if (connector.socketAvailable()) {
                     sendMessage(ChatCommandUtil.CREATE_ROOM, chatName);
                 }
             }
@@ -306,14 +300,9 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
 
     private void displayRoomList(String rooms) {
         String[] strRooms = rooms.split("\\|");
-        String[] nameWithIdHost;
         ArrayList<ChatRoom> list = new ArrayList<>();
         for (String strRoom : strRooms) {
-            nameWithIdHost = strRoom.split(",");
-            if (connector.getId().equals(nameWithIdHost[1])) {
-                continue;
-            }
-            list.add(new ChatRoom(nameWithIdHost[0]));
+            list.add(new ChatRoom(strRoom));
         }
         roomList.addNewRooms(list);
     }
