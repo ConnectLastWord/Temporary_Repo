@@ -93,6 +93,7 @@ public class ClientHandler implements Runnable, MessageHandler {
                 chatName = nameWithId[0];
                 id = nameWithId[1];
                 System.out.println("INIT_AS : " + chatName + " / " + id);
+                GroupManager.allBroadcastChatRoomList();
                 break;
             case ChatCommandUtil.ROOM_LIST:
                 if (chatRoomName != null) {     // 기존 채팅방의 내 정보 삭제 후, 새로운 채팅방 생성
