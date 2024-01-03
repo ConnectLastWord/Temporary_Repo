@@ -15,18 +15,10 @@ public class GroupManager {
 
     // 채팅방 생성 있는 채팅방이면 생성
     // 매개변수 = 채팅방 이름
-    public static void addChatRoom(String msg) {
-        // 채팅방 존재 여부 (기본 값 = false)
-        boolean isContains = false;
-        for (Group g : roomList) {
-            // 매개변수 값과 채팅방 이름이 같으면 존재 여부 true 변경
-            if (g.getGroupName().equals(msg)) {
-                isContains = true;
-                return;
-            }
-        }
+    public static void addChatRoom(String roomName) {
+        if(!isinGroup(roomName))
         // for문에서 존재 여부 값이 변하지 않으면 채팅방 생성 후 roomList 추가
-        roomList.add(new Group(msg));
+            roomList.add(new Group(roomName));
     }
 
     // 채팅방 내 사용자 추가
@@ -84,6 +76,17 @@ public class GroupManager {
             handler.close();
         }
         clientGroup.clear();
+    }
+
+    public static boolean isinGroup(String roomName) {
+        if(roomList.size() == 0)
+            return false;
+        for(Group g : roomList) {
+            if(g.getGroupName().equals(roomName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     static String createMessage(char command, String msg) {
