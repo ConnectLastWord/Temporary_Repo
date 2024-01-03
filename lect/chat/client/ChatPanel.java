@@ -174,6 +174,9 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             case ChatCommandUtil.ROOM_LIST:
                 displayRoomList(msg);
                 break;
+            case ChatCommandUtil.CREATE_ROOM:
+                JOptionPane.showMessageDialog(this, "이미 존재하는 방명입니다.", "ChatRoom", JOptionPane.WARNING_MESSAGE);
+                break;
             default:
                 break;
         }
