@@ -1,18 +1,24 @@
 package lect.chat.client;
 
-import lect.chat.client.event.ChatConnector;
-import lect.chat.client.event.ChatSocketListener;
-import lect.chat.client.event.MessageReceiver;
-import lect.chat.protocol.ChatCommandUtil;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import lect.chat.client.event.ChatConnector;
+import lect.chat.client.event.ChatSocketListener;
+import lect.chat.client.event.MessageReceiver;
+import lect.chat.protocol.ChatCommandUtil;
 
 // 컴포넌트 기반 신호 리스너
 @SuppressWarnings("serial")
@@ -169,7 +175,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 displayRoomList(msg);
                 break;
             case ChatCommandUtil.CREATE_ROOM:
-                JOptionPane.showMessageDialog(this, "이미 존재하는 방명입니다.", "ChatRoom", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, msg, "Faid Create ChatRoom", JOptionPane.WARNING_MESSAGE);
                 break;
             default:
                 break;
