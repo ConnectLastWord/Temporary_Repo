@@ -8,7 +8,7 @@ import java.util.Vector;
 public class GroupManager {
     // Duck[] arr;
     private static List<Group> roomList = new ArrayList<>();
-    private static Vector<MessageHandler> clientGroup = new Vector<MessageHandler>();
+    private static Vector<MessageHandler> clientGroup = new Vector<>();
 
     private GroupManager() {
     }

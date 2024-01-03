@@ -1,18 +1,24 @@
 package lect.chat.client;
 
-import lect.chat.client.event.ChatConnector;
-import lect.chat.client.event.ChatSocketListener;
-import lect.chat.client.event.MessageReceiver;
-import lect.chat.protocol.ChatCommandUtil;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import lect.chat.client.event.ChatConnector;
+import lect.chat.client.event.ChatSocketListener;
+import lect.chat.client.event.MessageReceiver;
+import lect.chat.protocol.ChatCommandUtil;
 
 // 컴포넌트 기반 신호 리스너
 @SuppressWarnings("serial")
@@ -24,6 +30,9 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
     ChatRoom room;
     CommandButton connectDisconnect;
     JButton clearChat;
+    // 방 생성 버튼
+    JButton makeRoom;
+
     // 입장 버튼
     JButton enterChat;
     PrintWriter writer;
@@ -38,6 +47,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         connectDisconnect.addActionListener(this);
         clearChat.addActionListener(this);
         enterChat.addActionListener(this);
+        makeRoom.addActionListener(this);
     }
 
     private void initUI() {
@@ -50,11 +60,14 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         clearChat = new JButton("ClearChat");
         // 입장 버튼
         enterChat = new JButton("EnterChat");
+        // 방생성 버튼
+        makeRoom = new JButton("MakeRoom");
 
         chatTextField.setEnabled(false);
         chatDispArea.setEditable(false);
         clearChat.setEnabled(false);
         enterChat.setEnabled(false);
+        makeRoom.setEnabled(false);
         userList.setEnabled(false);
         roomList.setEnabled(false);
 
@@ -137,6 +150,12 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         c.gridx = 4;
         c.anchor = GridBagConstraints.CENTER;
         add(enterChat, c);
+
+        c = new GridBagConstraints();
+        c.gridy = 2;
+        c.gridx = 5;
+        c.anchor = GridBagConstraints.CENTER;
+        add(makeRoom, c);
     }
 
     // 서버로부터 받은 응답 처리
@@ -193,7 +212,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             // 챗방 클리어 버튼일때
             if (e.getActionCommand().equals("ClearChat")) {
                 chatDispArea.initDisplay();
-            } else {    //  채팅방 입장 버튼일때
+            } else if (e.getActionCommand().equals("EneterChat"))  {  //  채팅방 입장 버튼일때
                 if (roomList.getSelectedValue() != room) {
                     room = (ChatRoom) roomList.getSelectedValue();
                     if (room == null) {
@@ -212,7 +231,22 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 JOptionPane.showMessageDialog(this, "이미 접속해있는 방입니다.", "ChatRoom",
                         JOptionPane.WARNING_MESSAGE);
             }
+            // 채팅방 생성 버튼
+            else{
+               String chatName = JOptionPane.showInputDialog("Enter create chatRoom name:");
+               if (chatName==null){
+                   return;
+               }
+               if (chatName.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "방 이름은 공백이 안됩니다", "Faild Create ChatRoom",
+                            JOptionPane.WARNING_MESSAGE);
+               }
+               if (connector.socketAvailable()) {
+                    sendMessage(ChatCommandUtil.CREATE_ROOM, chatName);
+                }
+            }
         }
+
     }
 
     public void socketClosed() {
@@ -222,6 +256,8 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         // 입장 버튼 비활성화
         enterChat.setEnabled(false);
         userList.setEnabled(false);
+        //채팅방 생성 버튼 비활성화
+        makeRoom.setEnabled(false);
         // 채팅방 목록 비활성화
         roomList.setEnabled(false);
         // 모든 유저 삭제
@@ -243,6 +279,8 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         // 입장 버튼 활성화
         enterChat.setEnabled(true);
         userList.setEnabled(true);
+        //채팅방 생성 활성화
+        makeRoom.setEnabled(true);
         // 채팅방 목록 활성화
         roomList.setEnabled(true);
     }
