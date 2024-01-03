@@ -1,8 +1,12 @@
 package lect.chat.client;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.util.ArrayList;
+import javax.swing.DefaultListModel;
+import javax.swing.DropMode;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 
 @SuppressWarnings("serial")
 public class ChatRoomList extends JList {
@@ -14,6 +18,7 @@ public class ChatRoomList extends JList {
         this.setDropMode(DropMode.ON);
     }
 
+    // TODO 지우기
     // 기본 채팅 3개 생성
     private void createDefaultRooms() {
         ArrayList<ChatRoom> rooms = new ArrayList<>();
@@ -55,7 +60,8 @@ public class ChatRoomList extends JList {
             return this;
         }
     }
-//
+
+// TODO 지우기
 //    public void transferFileDropped(List<File> files) {
 //        ChatRoom userToSendFile = (ChatRoom) this.getSelectedValue();
 //        try {
