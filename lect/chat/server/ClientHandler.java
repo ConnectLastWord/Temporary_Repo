@@ -24,6 +24,7 @@ public class ClientHandler implements Runnable, MessageHandler {
         br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         // 사용자 출력을 위한 빨대 생성
         pw = new PrintWriter(socket.getOutputStream(), true);
+        ChatServer.clients.add(pw);
     }
 
     public void run() {

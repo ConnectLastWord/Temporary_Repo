@@ -29,17 +29,13 @@ public class GroupManager {
         }
         System.out.println("rooms" + rooms);
 
-        for (Group group : roomList) {
-            group.broadcastChatRoom(rooms.toString());
-        }
+        ChatServer.broadcastMessage(rooms.toString());
     }
 
     // 채팅방 생성 있는 채팅방이면 생성
     // 매개변수 = 채팅방 이름
     public static void addChatRoom(String roomName) {
-        if (!isinGroup(roomName))
-            // for문에서 존재 여부 값이 변하지 않으면 채팅방 생성 후 roomList 추가
-            roomList.add(new Group(roomName));
+        roomList.add(new Group(roomName));
     }
 
     // 채팅방 내 사용자 추가
