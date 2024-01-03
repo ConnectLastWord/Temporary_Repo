@@ -93,4 +93,10 @@ public class Group {
             handler.sendMessage(createMessage(ChatCommandUtil.NORMAL, msg));
         }
     }
+
+    public void broadcastChatRoom(String msg) {
+        for (MessageHandler handler : clientList) {
+            handler.sendMessage(createMessage(ChatCommandUtil.ROOM_LIST, msg));
+        }
+    }
 }
