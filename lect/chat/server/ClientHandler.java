@@ -96,7 +96,7 @@ public class ClientHandler implements Runnable, MessageHandler {
                 id = nameWithId[1];
                 System.out.println("INIT_AS : " + chatName + " / " + id);
                 MessageHandlerManager.addMessageHandler(this);
-                MessageHandlerManager.broadcastMessage(GroupManager.getRoomsToString());
+                MessageHandlerManager.getInstance().broadcastMessage(GroupManager.getRoomsToString());
                 break;
             // 채팅방 접속
             case ChatCommandUtil.ROOM_LIST:
@@ -118,7 +118,7 @@ public class ClientHandler implements Runnable, MessageHandler {
                     Message.sendMessage(this, ChatCommandUtil.ROOM_LIST, "이미 존재하는 채팅방");
                 } else {
                     GroupManager.addChatRoom(msg);
-                    MessageHandlerManager.broadcastMessage(GroupManager.getRoomsToString());
+                    MessageHandlerManager.getInstance().broadcastMessage(GroupManager.getRoomsToString());
                 }
                 break;
             // 채팅방 메시지

@@ -10,6 +10,7 @@ public class Group {
     private String groupName;
     // 채팅방 소속된 유저 리스트
     private Vector<MessageHandler> clientList;
+    private static BroadCast broadCast;
 
     public Group(String groupName) {
         this.groupName = groupName;

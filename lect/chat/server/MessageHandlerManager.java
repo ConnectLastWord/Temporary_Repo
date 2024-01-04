@@ -1,9 +1,17 @@
 package lect.chat.server;
 
-import lect.chat.protocol.ChatCommandUtil;
-
-public class MessageHandlerManager {
+public class MessageHandlerManager implements BroadCast {
     private static MessageHandlerRepo messageHandleRepo = MessageHandlerRepo.getInstance();
+    private static BroadCast broadCast = new ClientBroadCast();
+    private static MessageHandlerManager instance;
+
+    // 싱글톤 패턴 구현
+    public static MessageHandlerManager getInstance() {
+        if (instance == null) {
+            instance = new MessageHandlerManager();
+        }
+        return instance;
+    }
 
     // 사용자 추가 책임 위임
     public static void addMessageHandler(MessageHandler handler) {
@@ -15,12 +23,8 @@ public class MessageHandlerManager {
         messageHandleRepo.remove(handler);
     }
 
-    // 사용자 브로드 캐스트
-    public static void broadcastMessage(String msg) {
-        messageHandleRepo.getKeySet();
-        for (String name : messageHandleRepo.getKeySet()) {
-            MessageHandler handler = messageHandleRepo.getMessageHandler(name);
-            Message.sendMessage(handler, ChatCommandUtil.ROOM_LIST, msg);
-        }
+    // 사용자 브로드 캐스트 책임 위임
+    public void broadcastMessage(String msg) {
+        broadCast.broadcastMessage(msg);
     }
 }

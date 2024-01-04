@@ -7,6 +7,7 @@ public class GroupManager {
     // Duck[] arr;
     private static GroupRepo groupRepo = GroupRepo.getInstance();
     private static Vector<MessageHandler> clientGroup = new Vector<>();
+    private static BroadCast broadCast = new ChatBroadCast();
 
     // 채팅방 추가 책임 위임
     public static void addChatRoom(String roomName) {
