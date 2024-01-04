@@ -28,6 +28,15 @@ public class GroupManager {
         // for문에서 존재 여부 값이 변하지 않으면 채팅방 생성 후 roomList 추가
         roomList.add(new Group(msg));
     }
+    //채팅방 제거
+    public static void removeChatRoom(String msg, ClientHandler clientHandler){
+        for(Group g: roomList){
+            if(g.getGroupName().equals(msg)){
+                roomList.remove(msg);
+            }
+            else return;
+        }
+    }
 
     // 채팅방 내 사용자 추가
     public static void addMessageHandler(String roomName, MessageHandler handler) {

@@ -106,6 +106,8 @@ public class ClientHandler implements Runnable, MessageHandler {
                 break;
             case ChatCommandUtil.CREATE_ROOM:
                 break;
+            case ChatCommandUtil.REMOVE_ROOM:
+                GroupManager.removeChatRoom(chatRoomName,this );
             default:
                 System.out.printf("ChatCommand %c \n", command);
                 break;

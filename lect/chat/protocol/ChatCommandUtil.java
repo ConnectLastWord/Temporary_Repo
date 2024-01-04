@@ -10,6 +10,8 @@ public class ChatCommandUtil {
     public static final char UNKNOWN = 'z';
     public static final char ROOM_LIST = 'r';
 
+    public static final char REMOVE_ROOM = 'g';
+
     private ChatCommandUtil() {
     }
 
