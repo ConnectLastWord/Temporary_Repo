@@ -7,5 +7,6 @@ public interface ChatConnector {
 	public boolean socketAvailable();
 	public void invalidateSocket();
 	public String getName();
+	public void setName(String userName);
 	public String getId();
 }

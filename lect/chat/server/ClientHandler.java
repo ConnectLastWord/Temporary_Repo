@@ -131,6 +131,8 @@ public class ClientHandler implements Runnable, MessageHandler {
                     this.sendMessage(GroupManager.createMessage(ChatCommandUtil.CHECK_USER_NAME, msg));
                 }
                 break;
+            case ChatCommandUtil.EXIT_PROGRAM:
+                UserNameRepository.removeUserName(msg);
             default:
                 System.out.printf("ChatCommand %c \n", command);
                 break;

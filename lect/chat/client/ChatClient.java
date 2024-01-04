@@ -105,6 +105,11 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
     }
 
     @Override
+    public void setName(String userName) {
+        this.userName = userName;
+    }
+
+    @Override
     public String getId() {
         return id;
     }

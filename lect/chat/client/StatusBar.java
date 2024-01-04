@@ -17,7 +17,7 @@ public class StatusBar extends JPanel implements ChatStatusListener {
 		c.weightx = 0.5;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		this.add(statusText, c);
-		statusText.setText("User Name");
+		statusText.setText("User Name: ");
 		//this.add(progBar, c);
 	}
 	public static StatusBar getStatusBar() {

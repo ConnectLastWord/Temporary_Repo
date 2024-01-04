@@ -176,7 +176,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 break;
             case ChatCommandUtil.CHECK_USER_NAME:
                 if(msg.equals("false")) {
-                    JOptionPane.showMessageDialog(this, "이미 존재하는 닉네임", "Fail Create UserName",
+                    JOptionPane.showMessageDialog(this, "이미 존재하는 닉네임", "Login Fail",
                         JOptionPane.WARNING_MESSAGE);
                     connector.disConnect();
                     connectDisconnect.toButton(CommandButton.CMD_CONNECT);
@@ -185,6 +185,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                     // user이름을 받아 statusBar에 설정
                   StatusBar statusBar = StatusBar.getStatusBar();
                   statusBar.setUserName(msg);
+                  connector.setName(msg);
                 }
                 break;
             default:
@@ -218,6 +219,9 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 chatTextField.setEnabled(false);
 
             } else {// 신호가 Disconnect 일때
+                sendMessage(ChatCommandUtil.EXIT_PROGRAM, connector.getName());
+                StatusBar statusBar = StatusBar.getStatusBar();
+                statusBar.setUserName("");
                 connector.disConnect();
                 connectDisconnect.toButton(CommandButton.CMD_CONNECT);
                 room = null;
