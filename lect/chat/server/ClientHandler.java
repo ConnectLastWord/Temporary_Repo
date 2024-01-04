@@ -131,6 +131,7 @@ public class ClientHandler implements Runnable, MessageHandler {
                     this.sendMessage(GroupManager.createMessage(ChatCommandUtil.CHECK_USER_NAME, "false"));
                 }else {
                     this.sendMessage(GroupManager.createMessage(ChatCommandUtil.CHECK_USER_NAME, msg));
+                    GroupManager.allBroadcastChatRoomList();
                 }
                 break;
             case ChatCommandUtil.EXIT_PROGRAM:
