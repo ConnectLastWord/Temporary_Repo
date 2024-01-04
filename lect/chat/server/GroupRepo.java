@@ -1,6 +1,7 @@
 package lect.chat.server;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,6 +32,11 @@ public class GroupRepo {
         return roomsList.get(roomName);
     }
 
+    // 채팅방 사용자 조회
+    public List<MessageHandler> findAllMessageHandler(String roomName) {
+        return getGroup(roomName).getClientList();
+    }
+
     // 포함 여부
     public boolean isContains(String roomName) {
         return roomsList.containsKey(roomName);
@@ -41,16 +47,16 @@ public class GroupRepo {
         return roomsList.keySet();
     }
 
-    // 문자열 채팅방 리스트 return
-    public String getRoomList() {
-        String[] names = getKeySet().toArray(new String[0]);
-        StringBuilder rooms = new StringBuilder(String.join("|", names));
-
-        return rooms.toString();
-    }
 
     // 채팅방 개수 조회
     public int getSize() {
         return roomsList.size();
+    }
+
+    // 문자열 채팅방 리스트 return
+    public String getRoomList() {
+        String[] names = getKeySet().toArray(new String[0]);
+        StringBuilder rooms = new StringBuilder(String.join("|", names));
+        return rooms.toString();
     }
 }

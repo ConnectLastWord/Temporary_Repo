@@ -1,35 +1,59 @@
 package lect.chat.server;
 
-import java.util.Vector;
+import java.util.List;
 
 // GroupManager roomList객체만 관리 / MessageHandler는 관리 x
 public class GroupManager {
-    // Duck[] arr;
+    private static GroupManager instance;
     private static GroupRepo groupRepo = GroupRepo.getInstance();
-    private static Vector<MessageHandler> clientGroup = new Vector<>();
-    private static BroadCast broadCast = new ChatBroadCast();
 
-    // 채팅방 추가 책임 위임
-    public static void addChatRoom(String roomName) {
+    // 싱글톤 패턴 구현
+    public static GroupManager getInstance() {
+        if (instance == null) {
+            instance = new GroupManager();
+        }
+        return instance;
+    }
+
+    // 채팅방 추가
+    public void addChatRoom(String roomName) {
         groupRepo.add(roomName);
     }
 
-    // 채팅방 삭제 책임 위임
-    public static void removeChatRoom(String roomName) {
+    // 채팅방 삭제
+    public void removeChatRoom(String roomName) {
         groupRepo.remove(roomName);
     }
 
-    // 특정 채팅방 조회 책임 위임
+    // 채팅방 유저 추가
+    public List<MessageHandler> addUserByChatRoom(String roomName, MessageHandler handler) {
+        Group g = findByName(roomName);
+        return g.addUser(handler);
+    }
+
+    // 채팅방 유저 삭제
+    public List<MessageHandler> removeUserByChatRoom(String roomName, MessageHandler handler) {
+        Group g = findByName(roomName);
+        return g.removeUser(handler);
+    }
+
+    // 특정 채팅방 조회
     public static Group findByName(String roomName) {
         return groupRepo.getGroup(roomName);
     }
 
-    // 채팅방 브로드캐스트 책임 위임
-    public static void broadcastMessage(String msg) {
+    // 채팅방 이름 문자열 조회
+    public String getRoomsToString() {
+        return groupRepo.getRoomList();
+    }
+
+    // 채팅방 사용자 문자열 조회
+    public String getUserByChatRoomToString(String roomName) {
+        return findByName(roomName).getUserList();
     }
 
     // 포함 여부
-    public static boolean isinGroup(String roomName) {
+    public boolean isContains(String roomName) {
         if (groupRepo.getSize() == 0)
             return false;
         if (groupRepo.isContains(roomName)) {
@@ -38,15 +62,7 @@ public class GroupManager {
         return false;
     }
 
-    // 채팅방 이름 조회
-    public static String getRoomsToString() {
-        return groupRepo.getRoomList();
-    }
-
-    public static void closeAllMessageHandlers() {
-        for (MessageHandler handler : clientGroup) {
-            handler.close();
-        }
-        clientGroup.clear();
+    public List<MessageHandler> findAllMessageHandler(String name) {
+        return groupRepo.findAllMessageHandler(name);
     }
 }

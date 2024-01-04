@@ -1,9 +1,10 @@
 package lect.chat.server;
 
-public class MessageHandlerManager implements BroadCast {
-    private static MessageHandlerRepo messageHandleRepo = MessageHandlerRepo.getInstance();
-    private static BroadCast broadCast = new ClientBroadCast();
+import java.util.List;
+
+public class MessageHandlerManager {
     private static MessageHandlerManager instance;
+    private static MessageHandlerRepo messageHandleRepo = MessageHandlerRepo.getInstance();
 
     // 싱글톤 패턴 구현
     public static MessageHandlerManager getInstance() {
@@ -13,22 +14,22 @@ public class MessageHandlerManager implements BroadCast {
         return instance;
     }
 
-    // 사용자 추가 책임 위임
-    public static void addMessageHandler(MessageHandler handler) {
+    // 사용자 추가
+    public void addMessageHandler(MessageHandler handler) {
         messageHandleRepo.add(handler);
     }
 
-    // 사용자 삭제 책임 위임
-    public static void removeMessageHandler(MessageHandler handler) {
+    // 사용자 삭제
+    public void removeMessageHandler(MessageHandler handler) {
         messageHandleRepo.remove(handler);
     }
 
-    // 사용자 브로드 캐스트 책임 위임
-    public void broadcastMessage(String msg) {
-        broadCast.broadcastMessage(msg);
+    // 포함 여부
+    public boolean isContains(String userName) {
+        return messageHandleRepo.isContains(userName);
     }
 
-    public static boolean isContains(String userName) {
-        return messageHandleRepo.isContains(userName);
+    public List<MessageHandler> findAllMessageHandler() {
+        return messageHandleRepo.getValues();
     }
 }
