@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.logging.Handler;
-
-import lect.chat.protocol.ChatCommandUtil;
 
 // 사용자 메시지를 전달하기 위한 구현체 = 하나의 클라이언트와 통신하기 위한 객체, 스레드
 public class ClientHandler implements Runnable, MessageHandler {
@@ -65,7 +62,7 @@ public class ClientHandler implements Runnable, MessageHandler {
     public void close() {
         try {
             socket.close();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -106,10 +103,10 @@ public class ClientHandler implements Runnable, MessageHandler {
                 id = nameWithId[1];
 
                 // user 이름이 이미 존재하는 경우
-                if(MessageHandlerManager.getInstance().isContains(chatName)) {
+                if (MessageHandlerManager.getInstance().isContains(chatName)) {
                     System.out.println(msg);
                     Message.sendMessage(this, ChatCommandUtil.CHECK_USER_NAME, "false");
-                }else {
+                } else {
                     Message.sendMessage(this, ChatCommandUtil.CHECK_USER_NAME, chatName);
                     MessageHandlerManager.addMessageHandler(this);
 //                    GroupManager.allBroadcastChatRoomList();
@@ -146,7 +143,7 @@ public class ClientHandler implements Runnable, MessageHandler {
                 g.broadcastMessage(String.format("%s: %s", chatName, sendMsg));
                 break;
             case ChatCommandUtil.REMOVE_ROOM:
-                GroupManager.removeChatRoom(chatRoomName,this );
+                GroupManager.removeChatRoom(chatRoomName);
             case ChatCommandUtil.EXIT_PROGRAM:
                 MessageHandlerManager.removeMessageHandler(this);
             default:
