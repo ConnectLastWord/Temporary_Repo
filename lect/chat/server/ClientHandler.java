@@ -1,18 +1,22 @@
 package lect.chat.server;
 
+import lect.chat.protocol.ChatCommandUtil;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import lect.chat.protocol.ChatCommandUtil;
 
 // 사용자 메시지를 전달하기 위한 구현체 = 하나의 클라이언트와 통신하기 위한 객체, 스레드
 public class ClientHandler implements Runnable, MessageHandler {
     private Socket socket;
     BufferedReader br;
     PrintWriter pw;
-    private String chatName, id, host, chatRoomName;
+    private String chatName;
+    private String id;
+    private String host;
+    private String chatRoomName;
 
     public ClientHandler(Socket s) throws IOException {
         // 소켓 필드에 대입
@@ -23,7 +27,6 @@ public class ClientHandler implements Runnable, MessageHandler {
         br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         // 사용자 출력을 위한 빨대 생성
         pw = new PrintWriter(socket.getOutputStream(), true);
-        ChatServer.clients.add(pw);
     }
 
     public void run() {
@@ -40,8 +43,9 @@ public class ClientHandler implements Runnable, MessageHandler {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            GroupManager.removeMessageHandler(chatRoomName, this);
-            GroupManager.broadcastLeftChatter(chatRoomName, this);
+            Group g = GroupManager.findByName(chatRoomName);
+            g.removeUser(this);
+            g.broadCastChatter(ChatCommandUtil.EXIT_ROOM, this);
             close();
         }
         System.out.println("Terminating ClientHandler");
@@ -58,6 +62,7 @@ public class ClientHandler implements Runnable, MessageHandler {
     public void close() {
         try {
             socket.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -75,50 +80,57 @@ public class ClientHandler implements Runnable, MessageHandler {
         return chatName;
     }
 
+    public String getRoomName() {
+        return chatRoomName;
+    }
+
     public void processMessage(String msg) {
         char command = ChatCommandUtil.getCommand(msg);// 첫번째 글자 떼옴
         //msg = [b]채팅방- 2|massage
         msg = msg.replaceFirst("\\[{1}[a-z]\\]{1}", "");// 첫번쨰 글자 없앰
         switch (command) {
-            case ChatCommandUtil.NORMAL:
-                String[] msgSplit = msg.split("\\|");
-                String roomName = msgSplit[0];
-                String sendMsg = msgSplit[1];
-                GroupManager.addChatRoom(roomName);
-                GroupManager.broadcastMessage(roomName, String.format("%s: %s", chatName, sendMsg));
-                break;
+            // 서버 연결
             case ChatCommandUtil.INIT_ALIAS:
                 String[] nameWithId = msg.split("\\|");
                 chatName = nameWithId[0];
                 id = nameWithId[1];
                 System.out.println("INIT_AS : " + chatName + " / " + id);
-                GroupManager.allBroadcastChatRoomList();
+                MessageHandlerManager.addMessageHandler(this);
+                MessageHandlerManager.getInstance().broadcastMessage(GroupManager.getRoomsToString());
                 break;
+            // 채팅방 접속
             case ChatCommandUtil.ROOM_LIST:
                 if (chatRoomName != null) {     // 기존 채팅방의 내 정보 삭제 후, 새로운 채팅방 생성
-                    GroupManager.removeMessageHandler(chatRoomName, this); // left// list user
-                    GroupManager.broadcastLeftChatter(chatRoomName, this);
+                    Group gr = GroupManager.findByName(chatRoomName);
+                    gr.removeUser(this);
+                    gr.broadCastChatter(ChatCommandUtil.EXIT_ROOM, this);
                 }
                 chatRoomName = msg;
-                GroupManager.addChatRoom(chatRoomName);
-                //  생성한 채팅방에 내 정보 등록
-                GroupManager.addMessageHandler(chatRoomName, this);
-                // 생성한 채팅방에 브로드캐스팅
-                GroupManager.broadcastNewChatter(chatRoomName, this);
+                //  접속 채팅방에 내 정보 등록
+                Group gr = GroupManager.findByName(chatRoomName);
+                gr.addUser(this);
+                // 접속 채팅방에 입장 메시지 브로드캐스팅
+                gr.broadCastChatter(ChatCommandUtil.ENTER_ROOM, this);
                 break;
+            // 채팅방 생성
             case ChatCommandUtil.CREATE_ROOM:
                 if (GroupManager.isinGroup(msg)) {
-                    this.sendMessage(GroupManager.createMessage(ChatCommandUtil.CREATE_ROOM, "이미 존재하는 채팅방"));
+                    Message.sendMessage(this, ChatCommandUtil.CREATE_ROOM, "이미 존재하는 채팅방");
                 } else {
                     GroupManager.addChatRoom(msg);
-                    GroupManager.allBroadcastChatRoomList();
+                    MessageHandlerManager.getInstance().broadcastMessage(GroupManager.getRoomsToString());
                 }
-
+                break;
+            // 채팅방 메시지
+            case ChatCommandUtil.NORMAL:
+                String[] msgSplit = msg.split("\\|");
+                String sendMsg = msgSplit[1];
+                Group g = GroupManager.findByName(chatRoomName);
+                g.broadcastMessage(String.format("%s: %s", chatName, sendMsg));
                 break;
             default:
                 System.out.printf("ChatCommand %c \n", command);
                 break;
-
         }
     }
 }
