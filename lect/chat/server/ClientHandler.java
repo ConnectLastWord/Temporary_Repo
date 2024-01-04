@@ -1,12 +1,11 @@
 package lect.chat.server;
 
-import lect.chat.protocol.ChatCommandUtil;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import lect.chat.protocol.ChatCommandUtil;
 
 // 사용자 메시지를 전달하기 위한 구현체 = 하나의 클라이언트와 통신하기 위한 객체, 스레드
 public class ClientHandler implements Runnable, MessageHandler {
@@ -102,6 +101,7 @@ public class ClientHandler implements Runnable, MessageHandler {
                 chatName = nameWithId[0];
                 id = nameWithId[1];
                 System.out.println("INIT_AS : " + chatName + " / " + id);
+                GroupManager.allBroadcastChatRoomList();
                 UserNameRepository.addUserName(chatName); // user 이름 별도로 저장
                 break;
             case ChatCommandUtil.ROOM_LIST:
@@ -118,7 +118,7 @@ public class ClientHandler implements Runnable, MessageHandler {
                 break;
             case ChatCommandUtil.CREATE_ROOM:
                 if (GroupManager.isinGroup(msg)) {
-                    this.sendMessage(GroupManager.createMessage(ChatCommandUtil.ROOM_LIST, "이미 존재하는 채팅방"));
+                    this.sendMessage(GroupManager.createMessage(ChatCommandUtil.CREATE_ROOM, "이미 존재하는 채팅방"));
                 } else {
                     GroupManager.addChatRoom(msg);
                     GroupManager.allBroadcastChatRoomList();

@@ -1,18 +1,24 @@
 package lect.chat.client;
 
-import lect.chat.client.event.ChatConnector;
-import lect.chat.client.event.ChatSocketListener;
-import lect.chat.client.event.MessageReceiver;
-import lect.chat.protocol.ChatCommandUtil;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import lect.chat.client.event.ChatConnector;
+import lect.chat.client.event.ChatSocketListener;
+import lect.chat.client.event.MessageReceiver;
+import lect.chat.protocol.ChatCommandUtil;
 
 // 컴포넌트 기반 신호 리스너
 @SuppressWarnings("serial")
@@ -182,6 +188,9 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                   connector.setName(msg);
                 }
                 break;
+            case ChatCommandUtil.CREATE_ROOM:
+                JOptionPane.showMessageDialog(this, msg, "Fail Create ChatRoom", JOptionPane.WARNING_MESSAGE);
+                break;
             default:
                 break;
         }
@@ -205,7 +214,6 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             if (e.getActionCommand().equals(CommandButton.CMD_CONNECT)) {
                 if (connector.connect()) {
                     connectDisconnect.toButton(CommandButton.CMD_DISCONNECT);
-//                    sendMessage(ChatCommandUtil.ENTIRE_USER_LIST)
                 }
                 // 컴포넌트 비활성화
                 userList.setEnabled(false);
@@ -320,9 +328,6 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             list.add(new ChatUser(nameWithIdHost[0], nameWithIdHost[1], nameWithIdHost[2]));
         }
         userList.addNewUsers(list);
-        for (String strUser : strUsers) {
-            System.out.println("strUser = " + strUser);
-        }
     }
 
     private void displayRoomList(String rooms) {
