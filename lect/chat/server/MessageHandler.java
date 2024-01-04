@@ -8,6 +8,8 @@ public interface MessageHandler {
 
     public String getName();
 
+    public String getRoomName();
+
     public String getFrom();
 
     public void sendMessage(String msg);
