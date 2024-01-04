@@ -39,6 +39,7 @@ public class ChatMessageReceiver implements Runnable, ChatSocketListener {
                 }
             }
         } catch (IOException e) {
+            e.printStackTrace();
             System.out.println("Terminating ChatMessageReceiver: " + e.getMessage());
         } finally {
             connector.invalidateSocket();
