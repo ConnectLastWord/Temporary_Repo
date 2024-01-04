@@ -13,21 +13,21 @@ import java.util.ArrayList;
 
 public class ChatClient extends WindowAdapter implements ChatConnector {
     private Socket socket;
-    private String chatName;
+    private String userName;
     private String id;
-    private ArrayList<ChatSocketListener> sListeners = new ArrayList<ChatSocketListener>();
+    private ArrayList<ChatSocketListener> sListeners = new ArrayList<>();
     private JFrame chatWindow;
 
     ChatClient() {
-        id = new java.rmi.server.UID().toString(); // uuid
+        id = new java.rmi.server.UID().toString();
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         ChatPanel chatPanel = new ChatPanel(this);
         chatPanel.setBorder(BorderFactory.createEtchedBorder());
-        StatusBar status = StatusBar.getStatusBar();
-        status.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+        StatusBar statusBar = StatusBar.getStatusBar();
+        statusBar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
                 BorderFactory.createEmptyBorder(1, 2, 2, 2)));
-        contentPane.add(status, BorderLayout.SOUTH);
+        contentPane.add(statusBar, BorderLayout.SOUTH);
         ChatMessageReceiver chatReceiver = new ChatMessageReceiver(this);
         chatReceiver.setMessageReceiver(chatPanel);
 
@@ -44,12 +44,6 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
 
         this.addChatSocketListener(chatPanel);
         this.addChatSocketListener(chatReceiver);
-        // 파일 전송 P2P 부분 주석
-//        try {
-//            P2P.getInstance().startService();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     @Override
@@ -57,19 +51,21 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
         if (socketAvailable()) {
             return true;
         }
-        chatName = JOptionPane.showInputDialog(chatWindow, "Enter chat name:");
-        if (chatName == null) {
-            return false;
-        }
-
         try {
             socket = new Socket("127.0.0.1", 8081);
             for (ChatSocketListener lsnr : sListeners) {
-                lsnr.socketConnected(socket);
+                lsnr.socketConnected(socket); // 초기화만 하고 init message는 보내지 않음
             }
-            return true;
+            userName = JOptionPane.showInputDialog(chatWindow, "Enter user name:");
+            if (userName == null) {
+                return false;
+            }else {
+                // 이름 검사를 한 후에 init message를 보냄
+                sListeners.get(0).checkUserName(socket);
+                return true;
+            }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Failed to connect chat server", "Eror", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Failed to connect chat server", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -104,7 +100,12 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
 
     @Override
     public String getName() {
-        return chatName;
+        return userName;
+    }
+
+    @Override
+    public void setName(String userName) {
+        this.userName = userName;
     }
 
     @Override

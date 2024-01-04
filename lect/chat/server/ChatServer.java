@@ -40,6 +40,5 @@ public class ChatServer implements Runnable {
 
     public void cleanup() throws IOException {
         ss.close();
-        GroupManager.closeAllMessageHandlers();
     }
 }

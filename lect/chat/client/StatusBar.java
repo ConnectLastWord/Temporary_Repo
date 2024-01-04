@@ -5,21 +5,19 @@ import lect.chat.client.p2p.event.FileProgressListener;
 import java.awt.*;
 import javax.swing.*;
 @SuppressWarnings("serial")
-public class StatusBar extends JPanel implements ChatStatusListener, FileProgressListener {
+public class StatusBar extends JPanel implements ChatStatusListener {
+	// 유저 정보 출력
 	private JLabel statusText;
-	private JProgressBar progBar;
 	private static StatusBar statusBar;
 	private GridBagConstraints c = new GridBagConstraints();
 	private StatusBar() {
 		super(new GridBagLayout());
 		statusText = new JLabel();
-		progBar = new JProgressBar();
-		progBar.setStringPainted(true);
 		statusText.setHorizontalAlignment(SwingConstants.LEFT);
 		c.weightx = 0.5;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		this.add(statusText, c);
-		statusText.setText("Initialized ...");
+		statusText.setText("User Name: ");
 		//this.add(progBar, c);
 	}
 	public static StatusBar getStatusBar() {
@@ -29,19 +27,8 @@ public class StatusBar extends JPanel implements ChatStatusListener, FileProgres
 	public void chatStatusChanged(Object obj) {
 		statusText.setText(obj.toString());
 	}
-	public void fileProgressed(String msg, int progress) {
-		progBar.setValue(progress);
-		progBar.setString(msg);
-	}
-	@Override
-	public void progressWillStart() {
-		add(progBar, c);
-		validate();
-	}
-	@Override
-	public void progressFinished() {
-		remove(progBar);
-		validate();
-		repaint();
+
+	public void setUserName(String userName) {
+		statusText.setText("User Name: " + userName);
 	}
 }

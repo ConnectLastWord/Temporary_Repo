@@ -2,8 +2,8 @@ package lect.chat.client;
 import javax.swing.*;
 @SuppressWarnings("serial")
 public class CommandButton extends JButton{
-	static final String CMD_DISCONNECT = "Disconnect";
-	static final String CMD_CONNECT = "Connect";
+	static final String CMD_DISCONNECT = "Log out";
+	static final String CMD_CONNECT = "Log in";
 	public CommandButton() {
 		this(CMD_CONNECT);
 	}

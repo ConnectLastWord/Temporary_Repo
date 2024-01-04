@@ -174,8 +174,22 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             case ChatCommandUtil.ROOM_LIST:
                 displayRoomList(msg);
                 break;
+            case ChatCommandUtil.CHECK_USER_NAME:
+                if(msg.equals("false")) {
+                    JOptionPane.showMessageDialog(this, "이미 존재하는 닉네임", "Login Fail",
+                        JOptionPane.WARNING_MESSAGE);
+                    connector.disConnect();
+                    connectDisconnect.toButton(CommandButton.CMD_CONNECT);
+                    room = null;
+                }else {
+                    // user이름을 받아 statusBar에 설정
+                  StatusBar statusBar = StatusBar.getStatusBar();
+                  statusBar.setUserName(msg);
+                  connector.setName(msg);
+                }
+                break;
             case ChatCommandUtil.CREATE_ROOM:
-                JOptionPane.showMessageDialog(this, msg, "Faid Create ChatRoom", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, msg, "Fail Create ChatRoom", JOptionPane.WARNING_MESSAGE);
                 break;
             default:
                 break;
@@ -207,6 +221,9 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 chatTextField.setEnabled(false);
 
             } else {// 신호가 Disconnect 일때
+                sendMessage(ChatCommandUtil.EXIT_PROGRAM, connector.getName());
+                StatusBar statusBar = StatusBar.getStatusBar();
+                statusBar.setUserName("");
                 connector.disConnect();
                 connectDisconnect.toButton(CommandButton.CMD_CONNECT);
                 room = null;
@@ -249,7 +266,6 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 }
             }
         }
-
     }
 
     public void socketClosed() {
@@ -273,9 +289,6 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
     //  ChatServer에게 사용자 이름과 , uuid값 전달하고, 채팅 기능을 위한 Component 활성화
     public void socketConnected(Socket s) throws IOException {
         writer = new PrintWriter(s.getOutputStream(), true);
-        // ChatCommandUtil - 서버와 통신할때 이벤트 식별자?
-        writer.println(createMessage(ChatCommandUtil.INIT_ALIAS,
-                String.format("%s|%s", connector.getName(), connector.getId())));
         chatTextField.setEnabled(true);
         chatDispArea.setEnabled(true);
         clearChat.setEnabled(true);
@@ -288,9 +301,13 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         roomList.setEnabled(true);
     }
 
+    public void checkUserName(Socket s) {
+        // 이름 검사
+        writer.println(createMessage(ChatCommandUtil.CHECK_USER_NAME,
+                String.format("%s|%s", connector.getName(), connector.getId())));
+    }
+
     private void displayUserList(String users) {
-        //format should be like 'name1,id1,host1|name2,id2,host2|...'
-        //System.out.println(users);
         String[] strUsers = users.split("\\|");
         String[] nameWithIdHost;
         ArrayList<ChatUser> list = new ArrayList<>();

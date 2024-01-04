@@ -60,17 +60,6 @@ public class ChatUserList extends JList {
         }
     }
 
-    public void transferFileDropped(List<File> files) {
-        ChatUser userToSendFile = (ChatUser) this.getSelectedValue();
-        try {
-            FileSender sender = new FileSender(userToSendFile.getHost(), files);
-            sender.setListener(StatusBar.getStatusBar());
-            sender.execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public class UserListTransferHandler extends TransferHandler {
         public boolean canImport(TransferHandler.TransferSupport info) {
             if (!info.isDrop()) {
@@ -89,23 +78,6 @@ public class ChatUserList extends JList {
 
         public int getSourceActions(JComponent c) {
             return TransferHandler.NONE;
-        }
-
-        @SuppressWarnings("unchecked")
-        public boolean importData(TransferHandler.TransferSupport info) {
-            if (!info.isDrop()) {
-                return false;
-            }
-            Transferable t = info.getTransferable();
-            List<File> data;
-            try {
-                data = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
-                ChatUserList.this.transferFileDropped(data);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-            return true;
         }
     }
 }
