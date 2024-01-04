@@ -27,4 +27,8 @@ public class MessageHandlerManager implements BroadCast {
     public void broadcastMessage(String msg) {
         broadCast.broadcastMessage(msg);
     }
+
+    public static boolean isContains(String userName) {
+        return messageHandleRepo.isContains(userName);
+    }
 }

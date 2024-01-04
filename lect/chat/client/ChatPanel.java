@@ -289,8 +289,6 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
     //  ChatServer에게 사용자 이름과 , uuid값 전달하고, 채팅 기능을 위한 Component 활성화
     public void socketConnected(Socket s) throws IOException {
         writer = new PrintWriter(s.getOutputStream(), true);
-//        writer.println(createMessage(ChatCommandUtil.INIT_ALIAS,
-//                String.format("%s|%s", connector.getName(), connector.getId())));
         chatTextField.setEnabled(true);
         chatDispArea.setEnabled(true);
         clearChat.setEnabled(true);
@@ -303,20 +301,13 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         roomList.setEnabled(true);
     }
 
-    public void checkUserName(Socket s, String userName) {
+    public void checkUserName(Socket s) {
         // 이름 검사
         writer.println(createMessage(ChatCommandUtil.CHECK_USER_NAME,
-                userName));
-    }
-
-    public void initConnect(Socket s) {
-        writer.println(createMessage(ChatCommandUtil.INIT_ALIAS,
-                String.format("%s|%s", connector.getName(), connector.getId()))); // init
+                String.format("%s|%s", connector.getName(), connector.getId())));
     }
 
     private void displayUserList(String users) {
-        //format should be like 'name1,id1,host1|name2,id2,host2|...'
-        //System.out.println(users);
         String[] strUsers = users.split("\\|");
         String[] nameWithIdHost;
         ArrayList<ChatUser> list = new ArrayList<>();

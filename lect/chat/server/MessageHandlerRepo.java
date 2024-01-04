@@ -44,4 +44,10 @@ public class MessageHandlerRepo {
     public MessageHandler getMessageHandler(String name) {
         return clientList.get(name);
     }
+
+    public boolean isContains(String userName) {
+        if(clientList.containsKey(userName))
+            return true;
+        return false;
+    }
 }

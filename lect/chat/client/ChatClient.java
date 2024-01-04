@@ -61,8 +61,7 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
                 return false;
             }else {
                 // 이름 검사를 한 후에 init message를 보냄
-                sListeners.get(0).checkUserName(socket, userName);
-                sListeners.get(0).initConnect(socket);
+                sListeners.get(0).checkUserName(socket);
                 return true;
             }
         } catch (IOException e) {
