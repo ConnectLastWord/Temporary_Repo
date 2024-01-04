@@ -53,4 +53,9 @@ public class ChatMessageReceiver implements Runnable, ChatSocketListener {
         reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
         new Thread(this).start();
     }
+
+    public void checkUserName(Socket s, String userName){
+    }
+    public void initConnect(Socket s) {
+    }
 }

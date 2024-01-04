@@ -57,6 +57,15 @@ public class ClientHandler implements Runnable, MessageHandler {
     public void close() {
         try {
             socket.close();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void close(String userName) {
+        try {
+            socket.close();
+            UserNameRepository.removeUserName(userName);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -91,6 +100,7 @@ public class ClientHandler implements Runnable, MessageHandler {
                 chatName = nameWithId[0];
                 id = nameWithId[1];
                 System.out.println("INIT_AS : " + chatName + " / " + id);
+                UserNameRepository.addUserName(chatName); // user 이름 별도로 저장
                 break;
             case ChatCommandUtil.ROOM_LIST:
                 if (chatRoomName != null) {     // 기존 채팅방의 내 정보 삭제 후, 새로운 채팅방 생성
@@ -111,7 +121,15 @@ public class ClientHandler implements Runnable, MessageHandler {
                 }else {
                     GroupManager.addChatRoom(msg);
                 }
-
+                break;
+            case ChatCommandUtil.CHECK_USER_NAME:
+                // user 이름이 이미 존재하는 경우
+                if(UserNameRepository.isin(msg)) {
+                    System.out.println(msg);
+                    this.sendMessage(GroupManager.createMessage(ChatCommandUtil.CHECK_USER_NAME, "false"));
+                }else {
+                    this.sendMessage(GroupManager.createMessage(ChatCommandUtil.CHECK_USER_NAME, msg));
+                }
                 break;
             default:
                 System.out.printf("ChatCommand %c \n", command);

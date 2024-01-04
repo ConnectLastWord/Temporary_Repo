@@ -174,6 +174,19 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             case ChatCommandUtil.ROOM_LIST:
                 displayRoomList(msg);
                 break;
+            case ChatCommandUtil.CHECK_USER_NAME:
+                if(msg.equals("false")) {
+                    JOptionPane.showMessageDialog(this, "이미 존재하는 닉네임", "Fail Create UserName",
+                        JOptionPane.WARNING_MESSAGE);
+                    connector.disConnect();
+                    connectDisconnect.toButton(CommandButton.CMD_CONNECT);
+                    room = null;
+                }else {
+                    // user이름을 받아 statusBar에 설정
+                  StatusBar statusBar = StatusBar.getStatusBar();
+                  statusBar.setUserName(msg);
+                }
+                break;
             default:
                 break;
         }
@@ -197,6 +210,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             if (e.getActionCommand().equals(CommandButton.CMD_CONNECT)) {
                 if (connector.connect()) {
                     connectDisconnect.toButton(CommandButton.CMD_DISCONNECT);
+//                    sendMessage(ChatCommandUtil.ENTIRE_USER_LIST)
                 }
                 // 컴포넌트 비활성화
                 userList.setEnabled(false);
@@ -246,7 +260,6 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 }
             }
         }
-
     }
 
     public void socketClosed() {
@@ -270,9 +283,8 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
     //  ChatServer에게 사용자 이름과 , uuid값 전달하고, 채팅 기능을 위한 Component 활성화
     public void socketConnected(Socket s) throws IOException {
         writer = new PrintWriter(s.getOutputStream(), true);
-        // ChatCommandUtil - 서버와 통신할때 이벤트 식별자?
-        writer.println(createMessage(ChatCommandUtil.INIT_ALIAS,
-                String.format("%s|%s", connector.getName(), connector.getId())));
+//        writer.println(createMessage(ChatCommandUtil.INIT_ALIAS,
+//                String.format("%s|%s", connector.getName(), connector.getId())));
         chatTextField.setEnabled(true);
         chatDispArea.setEnabled(true);
         clearChat.setEnabled(true);
@@ -283,6 +295,17 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         makeRoom.setEnabled(true);
         // 채팅방 목록 활성화
         roomList.setEnabled(true);
+    }
+
+    public void checkUserName(Socket s, String userName) {
+        // 이름 검사
+        writer.println(createMessage(ChatCommandUtil.CHECK_USER_NAME,
+                userName));
+    }
+
+    public void initConnect(Socket s) {
+        writer.println(createMessage(ChatCommandUtil.INIT_ALIAS,
+                String.format("%s|%s", connector.getName(), connector.getId()))); // init
     }
 
     private void displayUserList(String users) {
@@ -299,6 +322,9 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             list.add(new ChatUser(nameWithIdHost[0], nameWithIdHost[1], nameWithIdHost[2]));
         }
         userList.addNewUsers(list);
+        for (String strUser : strUsers) {
+            System.out.println("strUser = " + strUser);
+        }
     }
 
     private void displayRoomList(String rooms) {

@@ -9,6 +9,7 @@ public class ChatCommandUtil {
     public static final char EXIT_ROOM = 'f';
     public static final char UNKNOWN = 'z';
     public static final char ROOM_LIST = 'r';
+    public static final char CHECK_USER_NAME = 'u';
 
     private ChatCommandUtil() {
     }
