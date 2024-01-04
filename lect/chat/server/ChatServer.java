@@ -1,6 +1,9 @@
 package lect.chat.server;
 
+import lect.chat.protocol.ChatCommandUtil;
+
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,7 +12,8 @@ import java.util.List;
 
 public class ChatServer implements Runnable {
     ServerSocket ss;
-    static List<ChatServer> serverList = new ArrayList<>();
+    //    static List<ChatServer> serverList = new ArrayList<>();
+    static List<PrintWriter> clients = new ArrayList<>();
 
     public ChatServer(int port) throws IOException {
         ss = new ServerSocket(port);
@@ -43,6 +47,12 @@ public class ChatServer implements Runnable {
 
     public void cleanup() throws IOException {
         ss.close();
+    }
+
+    public static void broadcastMessage(String msg) {
+        for (PrintWriter pw : clients) {
+            pw.println(GroupManager.createMessage(ChatCommandUtil.ROOM_LIST, msg));
+        }
     }
 
 }

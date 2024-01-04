@@ -12,12 +12,29 @@ public class GroupManager {
     private GroupManager() {
     }
 
+    public static void allBroadcastChatRoomList() {
+        StringBuilder rooms = new StringBuilder();
+
+        int size = roomList.size();
+        Group g;
+
+        for (int i = 0; i < size; i++) {
+            g = roomList.get(i);
+            rooms.append(g.getGroupName());
+
+            if (i < (size - 1)) {
+                rooms.append("|");
+            }
+        }
+        System.out.println("rooms" + rooms);
+
+        ChatServer.broadcastMessage(rooms.toString());
+    }
+
     // 채팅방 생성 있는 채팅방이면 생성
     // 매개변수 = 채팅방 이름
     public static void addChatRoom(String roomName) {
-        if(!isinGroup(roomName))
-        // for문에서 존재 여부 값이 변하지 않으면 채팅방 생성 후 roomList 추가
-            roomList.add(new Group(roomName));
+        roomList.add(new Group(roomName));
     }
 
     // 채팅방 내 사용자 추가
@@ -71,10 +88,10 @@ public class GroupManager {
     }
 
     public static boolean isinGroup(String roomName) {
-        if(roomList.size() == 0)
+        if (roomList.size() == 0)
             return false;
-        for(Group g : roomList) {
-            if(g.getGroupName().equals(roomName)) {
+        for (Group g : roomList) {
+            if (g.getGroupName().equals(roomName)) {
                 return true;
             }
         }
