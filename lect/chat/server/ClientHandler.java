@@ -145,6 +145,8 @@ public class ClientHandler implements Runnable, MessageHandler {
                 Group g = GroupManager.findByName(chatRoomName);
                 g.broadcastMessage(String.format("%s: %s", chatName, sendMsg));
                 break;
+            case ChatCommandUtil.REMOVE_ROOM:
+                GroupManager.removeChatRoom(chatRoomName,this );
             case ChatCommandUtil.EXIT_PROGRAM:
                 MessageHandlerManager.removeMessageHandler(this);
             default:

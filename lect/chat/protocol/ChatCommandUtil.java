@@ -11,6 +11,8 @@ public class ChatCommandUtil {
     public static final char CHECK_USER_NAME = 'u';
     public static final char EXIT_PROGRAM = 'x';
 
+    public static final char REMOVE_ROOM = 'g';
+
     private ChatCommandUtil() {
     }
 
