@@ -1,6 +1,6 @@
 package lect.chat.server.application.group;
 
-import lect.chat.server.application.user.UserImpl;
+import lect.chat.server.application.user.User;
 
 import java.util.List;
 
@@ -28,13 +28,13 @@ public class GroupManager {
     }
 
     // 채팅방 유저 추가
-    public List<UserImpl> addUserByChatRoom(String roomName, UserImpl user) {
+    public List<User> addUserByChatRoom(String roomName, User user) {
         Group g = findByName(roomName);
         return g.addUser(user);
     }
 
     // 채팅방 유저 삭제
-    public List<UserImpl> removeUserByChatRoom(String roomName, UserImpl user) {
+    public List<User> removeUserByChatRoom(String roomName, User user) {
         Group g = findByName(roomName);
         return g.removeUser(user);
     }
@@ -64,7 +64,7 @@ public class GroupManager {
         return false;
     }
 
-    public List<UserImpl> findAllMessageHandler(String name) {
+    public List<User> findAllMessageHandler(String name) {
         return groupRepo.findAllMessageHandler(name);
     }
 }

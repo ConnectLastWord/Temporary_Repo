@@ -1,6 +1,6 @@
 package lect.chat.server.application.group;
 
-import lect.chat.server.application.user.UserImpl;
+import lect.chat.server.application.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ public class Group {
     // 채팅방 이름
     private String groupName;
     // 채팅방 소속된 유저 리스트
-    private List<UserImpl> clientList;
+    private List<User> clientList;
 
     public Group(String groupName) {
         this.groupName = groupName;
@@ -18,18 +18,18 @@ public class Group {
     }
 
     // 채팅방 내 사용자 추가
-    public List<UserImpl> addUser(UserImpl user) {
+    public List<User> addUser(User user) {
         clientList.add(user);
         System.out.println("Active clients count: " + clientList.size());
         return clientList;
     }
 
-    public List<UserImpl> getClientList() {
+    public List<User> getClientList() {
         return clientList;
     }
 
     // 채팅방 내 사용자 삭제
-    public List<UserImpl> removeUser(UserImpl user) {
+    public List<User> removeUser(User user) {
         clientList.remove(user);
         System.out.println("Active clients count: " + clientList.size());
         return clientList;
@@ -38,7 +38,7 @@ public class Group {
     public String getUserList() {
         StringBuilder userList = new StringBuilder();
         //  사용자 한명
-        UserImpl user;
+        User user;
         // 채팅방 인원수 파악
         int size = clientList.size();
         // 채팅방 내 사용자 반복수

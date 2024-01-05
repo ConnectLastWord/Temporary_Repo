@@ -4,7 +4,7 @@ import java.util.List;
 
 public class UserManager {
     private static UserManager instance;
-    private static UserRepo messageHandleRepo = UserRepo.getInstance();
+    private static UserRepo userRepo = UserRepo.getInstance();
 
     // 싱글톤 패턴 구현
     public static UserManager getInstance() {
@@ -15,21 +15,21 @@ public class UserManager {
     }
 
     // 사용자 추가
-    public void addMessageHandler(UserImpl user) {
-        messageHandleRepo.add(user);
+    public void addUser(User user) {
+        userRepo.add(user);
     }
 
     // 사용자 삭제
-    public void removeMessageHandler(UserImpl user) {
-        messageHandleRepo.remove(user);
+    public void removeUser(User user) {
+        userRepo.remove(user);
     }
 
     // 포함 여부
     public boolean isContains(String userName) {
-        return messageHandleRepo.isContains(userName);
+        return userRepo.isContains(userName);
     }
 
-    public List<UserImpl> findAllMessageHandler() {
-        return messageHandleRepo.getValues();
+    public List<User> findAllMessageHandler() {
+        return userRepo.getValues();
     }
 }

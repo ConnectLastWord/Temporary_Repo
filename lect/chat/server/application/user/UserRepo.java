@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class UserRepo {
     private static UserRepo instance;
-    private static Map<String, UserImpl> clientList = new HashMap<>();
+    private static Map<String, User> clientList = new HashMap<>();
 
     // 싱글톤 패턴 구현
     public static UserRepo getInstance() {
@@ -17,18 +17,18 @@ public class UserRepo {
     }
 
     // 사용자 추가
-    public void add(UserImpl user) {
+    public void add(User user) {
         clientList.put(user.getChatName(), user);
     }
 
     // 사용자 삭제
-    public void remove(UserImpl user) {
+    public void remove(User user) {
         clientList.remove(user.getChatName());
     }
 
 
     // 모든 사용자 조회
-    public List<UserImpl> getValues() {
+    public List<User> getValues() {
         return clientList.values().stream().toList();
     }
 

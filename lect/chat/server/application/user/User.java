@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class UserImpl {
-    private Socket socket;
+public abstract class User {
+    Socket socket;
     BufferedReader br;
     PrintWriter pw;
     private String chatName;
@@ -14,19 +14,19 @@ public class UserImpl {
     private String host;
     private String chatRoomName;
 
-    public UserImpl(Socket socket, BufferedReader br, PrintWriter pw, String host) {
+    public User(Socket socket, BufferedReader br, PrintWriter pw, String host) {
         this.socket = socket;
         this.br = br;
         this.pw = pw;
         this.host = host;
     }
 
-    public void setChatName(String chatName) {
-        this.chatName = chatName;
-    }
-
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setChatName(String name) {
+        this.chatName = name;
     }
 
     public void setChatRoomName(String chatRoomName) {
@@ -59,22 +59,6 @@ public class UserImpl {
 
     public String getChatName() {
         return chatName;
-    }
-
-    public void setSocket(Socket socket) {
-        this.socket = socket;
-    }
-
-    public void setBr(BufferedReader br) {
-        this.br = br;
-    }
-
-    public void setPw(PrintWriter pw) {
-        this.pw = pw;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
     }
 
     public void println(String msg) {
