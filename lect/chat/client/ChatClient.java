@@ -1,7 +1,10 @@
 package lect.chat.client;
 
-import lect.chat.client.event.ChatConnector;
-import lect.chat.client.event.ChatSocketListener;
+import lect.chat.client.components.StatusBar;
+import lect.chat.client.connect.ChatConnector;
+import lect.chat.client.connect.ChatSocketListener;
+import lect.chat.client.connect.api.ChatPanel;
+import lect.chat.client.connect.service.ChatMessageReceiver;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,7 +62,7 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
             userName = JOptionPane.showInputDialog(chatWindow, "Enter user name:");
             if (userName == null) {
                 return false;
-            }else {
+            } else {
                 // 이름 검사를 한 후에 init message를 보냄
                 sListeners.get(0).checkUserName(socket);
                 return true;
