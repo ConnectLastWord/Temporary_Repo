@@ -15,7 +15,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import lect.chat.client.event.ChatConnector;
 import lect.chat.client.event.ChatSocketListener;
 import lect.chat.client.event.MessageReceiver;
 import lect.chat.protocol.ChatCommandUtil;
@@ -36,13 +35,11 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
     // 입장 버튼
     JButton enterChat;
     PrintWriter writer;
-    ChatConnector connector;
     StringBuilder msgBuilder = new StringBuilder();
 
-    public ChatPanel(ChatConnector c) {
+    public ChatPanel() {
         super(new GridBagLayout());
         initUI();
-        connector = c;
         chatTextField.addActionListener(this);
         connectDisconnect.addActionListener(this);
         clearChat.addActionListener(this);
@@ -175,6 +172,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 displayRoomList(msg);
                 break;
             case ChatCommandUtil.CHECK_USER_NAME:
+                Connector connector = Connector.getInstance();
                 if(msg.equals("false")) {
                     JOptionPane.showMessageDialog(this, "이미 존재하는 닉네임", "Login Fail",
                         JOptionPane.WARNING_MESSAGE);
@@ -185,7 +183,6 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                     // user이름을 받아 statusBar에 설정
                   StatusBar statusBar = StatusBar.getStatusBar();
                   statusBar.setUserName(msg);
-                  connector.setName(msg);
                 }
                 break;
             case ChatCommandUtil.CREATE_ROOM:
@@ -198,6 +195,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
 
     // 클라이언트(컴포넌트 신호)로부터 신호가 들어왔을 때
     public void actionPerformed(ActionEvent e) {
+        Connector connector = Connector.getInstance();
         Object sourceObj = e.getSource();
         if (sourceObj == chatTextField) {
             String msgToSend = chatTextField.getText();
@@ -303,11 +301,13 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
 
     public void checkUserName(Socket s) {
         // 이름 검사
+        Connector connector = Connector.getInstance();
         writer.println(createMessage(ChatCommandUtil.CHECK_USER_NAME,
                 String.format("%s|%s", connector.getName(), connector.getId())));
     }
 
     private void displayUserList(String users) {
+        Connector connector = Connector.getInstance();
         String[] strUsers = users.split("\\|");
         String[] nameWithIdHost;
         ArrayList<ChatUser> list = new ArrayList<>();

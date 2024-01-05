@@ -15,8 +15,8 @@ public class ChatMessageReceiver implements Runnable, ChatSocketListener {
     private MessageReceiver receiver;
     ChatConnector connector;
 
-    public ChatMessageReceiver(ChatConnector c) {
-        connector = c;
+    public ChatMessageReceiver() {
+
     }
 
     public void setMessageReceiver(MessageReceiver r) {
@@ -26,6 +26,7 @@ public class ChatMessageReceiver implements Runnable, ChatSocketListener {
     // 채팅 기능을 위한 스레드
     public void run() {
         String msg;
+        Connector connector = Connector.getInstance();
         try {
             while (connector.socketAvailable()) { //소켓이 null이나 closed가 아닌 경우
                 msg = reader.readLine();
