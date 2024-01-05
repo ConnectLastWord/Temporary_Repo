@@ -1,8 +1,7 @@
 package lect.chat.server;
 
-import lect.chat.protocol.ChatCommandUtil;
-
 import java.util.Vector;
+import lect.chat.protocol.ChatCommandUtil;
 
 // 채팅방 1개
 public class Group {
@@ -34,9 +33,9 @@ public class Group {
         for (MessageHandler mh : clientList) {
             // 퇴장 브로드캐스팅
             if (protocol == ChatCommandUtil.EXIT_ROOM) {
-                Message.sendMessage(mh, protocol, handler.getName() + " has just left [" + groupName + "] room room");
+                Message.sendMessage(mh, protocol, handler.getName() + " has just left [" + groupName + "] room");
             } else { // 입장 브로드캐스팅
-                Message.sendMessage(mh, protocol, handler.getName() + " has entered [" + groupName + "] room room");
+                Message.sendMessage(mh, protocol, handler.getName() + " has entered [" + groupName + "] room");
             }
 
             // List Of Users 브로드 캐스팅
