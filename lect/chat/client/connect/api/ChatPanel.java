@@ -1,8 +1,15 @@
-package lect.chat.client;
+package lect.chat.client.connect.api;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import lect.chat.client.components.*;
+import lect.chat.client.connect.ChatConnector;
+import lect.chat.client.connect.ChatSocketListener;
+import lect.chat.client.connect.service.MessageReceiver;
+import lect.chat.client.model.ChatRoom;
+import lect.chat.client.model.ChatUser;
+import lect.chat.protocol.ChatCommandUtil;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -195,7 +202,6 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
 
     // 클라이언트(컴포넌트 신호)로부터 신호가 들어왔을 때
     public void actionPerformed(ActionEvent e) {
-        Connector connector = Connector.getInstance();
         Object sourceObj = e.getSource();
         if (sourceObj == chatTextField) {
             String msgToSend = chatTextField.getText();
@@ -301,13 +307,11 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
 
     public void checkUserName(Socket s) {
         // 이름 검사
-        Connector connector = Connector.getInstance();
         writer.println(createMessage(ChatCommandUtil.CHECK_USER_NAME,
                 String.format("%s|%s", connector.getName(), connector.getId())));
     }
 
     private void displayUserList(String users) {
-        Connector connector = Connector.getInstance();
         String[] strUsers = users.split("\\|");
         String[] nameWithIdHost;
         ArrayList<ChatUser> list = new ArrayList<>();

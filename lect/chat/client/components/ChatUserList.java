@@ -1,15 +1,11 @@
-package lect.chat.client;
+package lect.chat.client.components;
 
-import lect.chat.client.p2p.FileSender;
+import lect.chat.client.model.ChatUser;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 @SuppressWarnings("serial")
 public class ChatUserList extends JList {

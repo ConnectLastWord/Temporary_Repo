@@ -1,7 +1,10 @@
 package lect.chat.client;
 
-import lect.chat.client.event.ChatConnector;
-import lect.chat.client.event.ChatSocketListener;
+import lect.chat.client.components.StatusBar;
+import lect.chat.client.connect.ChatConnector;
+import lect.chat.client.connect.ChatSocketListener;
+import lect.chat.client.connect.api.ChatPanel;
+import lect.chat.client.connect.service.ChatMessageReceiver;
 
 import javax.swing.*;
 import java.awt.*;

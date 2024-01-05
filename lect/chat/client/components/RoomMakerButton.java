@@ -1,4 +1,4 @@
-package lect.chat.client;
+package lect.chat.client.components;
 
 import javax.swing.*;
 

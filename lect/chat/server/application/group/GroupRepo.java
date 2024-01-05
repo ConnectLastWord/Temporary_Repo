@@ -1,12 +1,19 @@
-package lect.chat.server;
+package lect.chat.server.application.group;
+
+import lect.chat.server.application.user.User;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class GroupRepo {
     private static GroupRepo instance;
-    private static Map<String, Group> roomsList = new HashMap<>();
+    private static Map<String, Group> roomsList;
+
+    private GroupRepo() {
+        roomsList = new HashMap<>();
+    }
 
     // 싱글톤 패턴 구현
     public static GroupRepo getInstance() {
@@ -31,6 +38,11 @@ public class GroupRepo {
         return roomsList.get(roomName);
     }
 
+    // 채팅방 사용자 조회
+    public List<User> findAllMessageHandler(String roomName) {
+        return getGroup(roomName).getClientList();
+    }
+
     // 포함 여부
     public boolean isContains(String roomName) {
         return roomsList.containsKey(roomName);
@@ -41,16 +53,16 @@ public class GroupRepo {
         return roomsList.keySet();
     }
 
-    // 문자열 채팅방 리스트 return
-    public String getRoomList() {
-        String[] names = getKeySet().toArray(new String[0]);
-        StringBuilder rooms = new StringBuilder(String.join("|", names));
-
-        return rooms.toString();
-    }
 
     // 채팅방 개수 조회
     public int getSize() {
         return roomsList.size();
+    }
+
+    // 문자열 채팅방 리스트 return
+    public String getRoomList() {
+        String[] names = getKeySet().toArray(new String[0]);
+        StringBuilder rooms = new StringBuilder(String.join("|", names));
+        return rooms.toString();
     }
 }

@@ -1,8 +1,7 @@
-package lect.chat.client;
+package lect.chat.client.connect.service;
 
-import lect.chat.client.event.ChatConnector;
-import lect.chat.client.event.ChatSocketListener;
-import lect.chat.client.event.MessageReceiver;
+import lect.chat.client.connect.ChatConnector;
+import lect.chat.client.connect.ChatSocketListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -56,8 +55,9 @@ public class ChatMessageReceiver implements Runnable, ChatSocketListener {
         new Thread(this).start();
     }
 
-    public void checkUserName(Socket s){
+    public void checkUserName(Socket s) {
     }
+
     public void initConnect(Socket s) {
     }
 }

@@ -2,7 +2,6 @@ package lect.chat.client.event;
 import java.net.*;
 public interface ChatConnector {
 	boolean connect();
-
 	void disConnect();
 	Socket getSocket();
 	boolean socketAvailable();

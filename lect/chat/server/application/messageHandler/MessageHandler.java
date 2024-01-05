@@ -1,4 +1,4 @@
-package lect.chat.server;
+package lect.chat.server.application.messageHandler;
 
 import java.io.IOException;
 
@@ -17,5 +17,8 @@ public interface MessageHandler {
     public String getMessage() throws IOException;
 
     public void close();
+
     public void close(String userName);
+
+    public String createMessage(char protocol, String s);
 }
