@@ -1,6 +1,9 @@
-package lect.chat.server;
+package lect.chat.server.application.messageHandler;
 
 import lect.chat.protocol.ChatCommandUtil;
+import lect.chat.server.application.group.GroupManager;
+import lect.chat.server.application.user.UserImpl;
+import lect.chat.server.application.user.UserManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;

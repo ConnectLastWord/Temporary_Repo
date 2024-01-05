@@ -1,4 +1,6 @@
-package lect.chat.server;
+package lect.chat.server.api;
+
+import lect.chat.server.application.messageHandler.MessageHandlerImpl;
 
 import java.io.IOException;
 import java.net.InetAddress;

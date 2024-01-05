@@ -1,5 +1,7 @@
 package lect.chat.server;
 
+import lect.chat.server.api.ChatServer;
+
 import java.io.IOException;
 
 public class Main {

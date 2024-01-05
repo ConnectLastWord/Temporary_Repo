@@ -1,4 +1,4 @@
-package lect.chat.server;
+package lect.chat.server.application.user;
 
 import java.util.HashMap;
 import java.util.List;

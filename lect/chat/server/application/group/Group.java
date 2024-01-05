@@ -1,4 +1,6 @@
-package lect.chat.server;
+package lect.chat.server.application.group;
+
+import lect.chat.server.application.user.UserImpl;
 
 import java.util.ArrayList;
 import java.util.List;
