@@ -13,18 +13,9 @@ public class GroupManager {
     public static void addChatRoom(String roomName) {
         groupRepo.add(roomName);
     }
-
-    // 채팅방 삭제 책임 위임
-    public static void removeChatRoom(String roomName) {
-    }
     //채팅방 제거
-    public static void removeChatRoom(String msg, ClientHandler clientHandler){
-        for(Group g: roomList){
-            if(g.getGroupName().equals(msg)){
-                roomList.remove(msg);
-            }
-            else return;
-        }
+    public static void removeChatRoom(String roomName){
+        groupRepo.remove(roomName);
     }
 
     // 특정 채팅방 조회 책임 위임

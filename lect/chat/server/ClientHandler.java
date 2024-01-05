@@ -112,7 +112,7 @@ public class ClientHandler implements Runnable, MessageHandler {
                 }else {
                     Message.sendMessage(this, ChatCommandUtil.CHECK_USER_NAME, chatName);
                     MessageHandlerManager.addMessageHandler(this);
-//                    GroupManager.allBroadcastChatRoomList();
+                    MessageHandlerManager.getInstance().broadcastMessage(GroupManager.getRoomsToString());
                 }
                 break;
             // 채팅방 접속
@@ -146,7 +146,7 @@ public class ClientHandler implements Runnable, MessageHandler {
                 g.broadcastMessage(String.format("%s: %s", chatName, sendMsg));
                 break;
             case ChatCommandUtil.REMOVE_ROOM:
-                GroupManager.removeChatRoom(chatRoomName,this );
+                GroupManager.removeChatRoom(chatRoomName);
             case ChatCommandUtil.EXIT_PROGRAM:
                 MessageHandlerManager.removeMessageHandler(this);
             default:
