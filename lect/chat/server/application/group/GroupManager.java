@@ -7,7 +7,11 @@ import java.util.List;
 // GroupManager roomList객체만 관리 / MessageHandler는 관리 x
 public class GroupManager {
     private static GroupManager instance;
-    private static GroupRepo groupRepo = GroupRepo.getInstance();
+    private static GroupRepo groupRepo;
+
+    private GroupManager() {
+        groupRepo = GroupRepo.getInstance();
+    }
 
     // 싱글톤 패턴 구현
     public static GroupManager getInstance() {

@@ -6,7 +6,11 @@ import java.util.Map;
 
 public class UserRepo {
     private static UserRepo instance;
-    private static Map<String, User> clientList = new HashMap<>();
+    private static Map<String, User> clientList;
+
+    private UserRepo() {
+        clientList = new HashMap<>();
+    }
 
     // 싱글톤 패턴 구현
     public static UserRepo getInstance() {

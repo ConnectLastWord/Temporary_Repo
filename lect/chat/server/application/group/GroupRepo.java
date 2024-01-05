@@ -9,7 +9,11 @@ import java.util.Set;
 
 public class GroupRepo {
     private static GroupRepo instance;
-    private static Map<String, Group> roomsList = new HashMap<>();
+    private static Map<String, Group> roomsList;
+
+    private GroupRepo() {
+        roomsList = new HashMap<>();
+    }
 
     // 싱글톤 패턴 구현
     public static GroupRepo getInstance() {

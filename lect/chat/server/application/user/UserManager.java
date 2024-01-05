@@ -4,7 +4,11 @@ import java.util.List;
 
 public class UserManager {
     private static UserManager instance;
-    private static UserRepo userRepo = UserRepo.getInstance();
+    private static UserRepo userRepo;
+
+    private UserManager() {
+        userRepo = UserRepo.getInstance();
+    }
 
     // 싱글톤 패턴 구현
     public static UserManager getInstance() {
