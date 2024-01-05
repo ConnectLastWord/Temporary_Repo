@@ -33,7 +33,7 @@ public class GroupRepo {
     }
 
     // 채팅방 사용자 조회
-    public List<MessageHandler> findAllMessageHandler(String roomName) {
+    public List<UserImpl> findAllMessageHandler(String roomName) {
         return getGroup(roomName).getClientList();
     }
 

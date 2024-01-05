@@ -26,15 +26,15 @@ public class GroupManager {
     }
 
     // 채팅방 유저 추가
-    public List<MessageHandler> addUserByChatRoom(String roomName, MessageHandler handler) {
+    public List<UserImpl> addUserByChatRoom(String roomName, UserImpl user) {
         Group g = findByName(roomName);
-        return g.addUser(handler);
+        return g.addUser(user);
     }
 
     // 채팅방 유저 삭제
-    public List<MessageHandler> removeUserByChatRoom(String roomName, MessageHandler handler) {
+    public List<UserImpl> removeUserByChatRoom(String roomName, UserImpl user) {
         Group g = findByName(roomName);
-        return g.removeUser(handler);
+        return g.removeUser(user);
     }
 
     // 특정 채팅방 조회
@@ -62,7 +62,7 @@ public class GroupManager {
         return false;
     }
 
-    public List<MessageHandler> findAllMessageHandler(String name) {
+    public List<UserImpl> findAllMessageHandler(String name) {
         return groupRepo.findAllMessageHandler(name);
     }
 }
