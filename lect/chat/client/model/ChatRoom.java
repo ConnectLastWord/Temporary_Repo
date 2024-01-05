@@ -1,4 +1,4 @@
-package lect.chat.client;
+package lect.chat.client.model;
 
 public class ChatRoom {
     // 채팅방 이름

@@ -1,4 +1,4 @@
-package lect.chat.client;
+package lect.chat.client.components;
 
 import lect.chat.client.p2p.event.FileProgressListener;
 import lect.chat.protocol.ChatCommandUtil;
@@ -75,7 +75,8 @@ public class ChatTextPane extends JTextPane implements FileProgressListener {
     public void setRecordRemovedMsg(boolean rrm) {
         recordRemovedMsg = rrm;
     }
-//TODO 지우기
+
+    //TODO 지우기
     private void saveBeforeRemove(int len) throws BadLocationException {
         String contentToSave = getText(0, len);
         FileWriter fw = null;

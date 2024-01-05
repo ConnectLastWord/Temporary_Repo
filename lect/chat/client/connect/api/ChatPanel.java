@@ -1,24 +1,21 @@
-package lect.chat.client;
+package lect.chat.client.connect.api;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import lect.chat.client.components.*;
+import lect.chat.client.connect.ChatConnector;
+import lect.chat.client.connect.ChatSocketListener;
+import lect.chat.client.connect.service.MessageReceiver;
+import lect.chat.client.model.ChatRoom;
+import lect.chat.client.model.ChatUser;
+import lect.chat.protocol.ChatCommandUtil;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import lect.chat.client.event.ChatConnector;
-import lect.chat.client.event.ChatSocketListener;
-import lect.chat.client.event.MessageReceiver;
-import lect.chat.protocol.ChatCommandUtil;
 
 // 컴포넌트 기반 신호 리스너
 @SuppressWarnings("serial")
@@ -175,17 +172,17 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 displayRoomList(msg);
                 break;
             case ChatCommandUtil.CHECK_USER_NAME:
-                if(msg.equals("false")) {
+                if (msg.equals("false")) {
                     JOptionPane.showMessageDialog(this, "이미 존재하는 닉네임", "Login Fail",
-                        JOptionPane.WARNING_MESSAGE);
+                            JOptionPane.WARNING_MESSAGE);
                     connector.disConnect();
                     connectDisconnect.toButton(CommandButton.CMD_CONNECT);
                     room = null;
-                }else {
+                } else {
                     // user이름을 받아 statusBar에 설정
-                  StatusBar statusBar = StatusBar.getStatusBar();
-                  statusBar.setUserName(msg);
-                  connector.setName(msg);
+                    StatusBar statusBar = StatusBar.getStatusBar();
+                    statusBar.setUserName(msg);
+                    connector.setName(msg);
                 }
                 break;
             case ChatCommandUtil.CREATE_ROOM:
