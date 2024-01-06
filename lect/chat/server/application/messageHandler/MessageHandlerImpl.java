@@ -110,14 +110,15 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
             case ChatCommandUtil.CHECK_USER_NAME:
                 String[] nameWithId = msg.split("\\|");
                 user.setChatName(nameWithId[0]);
-//                chatName = nameWithId[0];
                 user.setId(nameWithId[1]);
-//                id = nameWithId[1];
-                // user 이름이 이미 존재하는 경우
+                // user 이름이 이미 존재하는 경우에는 로그인 실패
                 if (mM.isContains(user.getChatName())) {
                     sendMessage(createMessage(ChatCommandUtil.CHECK_USER_NAME, "false"));
                 } else {
+                    // user가 존재하지 않는 경우에는 로그인
                     sendMessage(createMessage(ChatCommandUtil.CHECK_USER_NAME, user.getChatName()));
+                    sendMessage(createMessage(ChatCommandUtil.ROOM_LIST, gM.getRoomsToString()));
+//                    broadcastMessage(mM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_LIST, gM.getRoomsToString()));
                     mM.addUser(user);
                 }
                 break;

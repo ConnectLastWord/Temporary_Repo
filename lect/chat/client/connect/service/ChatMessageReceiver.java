@@ -1,5 +1,6 @@
 package lect.chat.client.connect.service;
 
+import lect.chat.client.Connector;
 import lect.chat.client.connect.ChatConnector;
 import lect.chat.client.connect.ChatSocketListener;
 

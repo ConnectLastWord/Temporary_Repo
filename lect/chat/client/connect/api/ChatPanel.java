@@ -1,5 +1,6 @@
 package lect.chat.client.connect.api;
 
+import lect.chat.client.Connector;
 import lect.chat.client.components.*;
 import lect.chat.client.connect.ChatConnector;
 import lect.chat.client.connect.ChatSocketListener;
@@ -22,9 +23,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import lect.chat.client.event.ChatSocketListener;
-import lect.chat.client.event.MessageReceiver;
-import lect.chat.protocol.ChatCommandUtil;
 
 // 컴포넌트 기반 신호 리스너
 @SuppressWarnings("serial")
@@ -188,8 +186,8 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                     room = null;
                 }else {
                     // user이름을 받아 statusBar에 설정
-                  StatusBar statusBar = StatusBar.getStatusBar();
-                  statusBar.setUserName(msg);
+                    StatusBar statusBar = StatusBar.getStatusBar();
+                    statusBar.setUserName(msg);
                 }
                 break;
             case ChatCommandUtil.CREATE_ROOM:
@@ -202,6 +200,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
 
     // 클라이언트(컴포넌트 신호)로부터 신호가 들어왔을 때
     public void actionPerformed(ActionEvent e) {
+        Connector connector = Connector.getInstance();
         Object sourceObj = e.getSource();
         if (sourceObj == chatTextField) {
             String msgToSend = chatTextField.getText();
@@ -307,6 +306,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
 
     public void checkUserName(Socket s) {
         // 이름 검사
+        Connector connector = Connector.getInstance();
         writer.println(createMessage(ChatCommandUtil.CHECK_USER_NAME,
                 String.format("%s|%s", connector.getName(), connector.getId())));
     }
@@ -315,6 +315,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         String[] strUsers = users.split("\\|");
         String[] nameWithIdHost;
         ArrayList<ChatUser> list = new ArrayList<>();
+        Connector connector = Connector.getInstance();
         for (String strUser : strUsers) {
             nameWithIdHost = strUser.split(",");
             if (connector.getId().equals(nameWithIdHost[1])) {

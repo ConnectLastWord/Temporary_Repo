@@ -32,7 +32,6 @@ public class ChatClient extends WindowAdapter {
         connector.addChatSocketListener(chatPanel);
         connector.addChatSocketListener(chatReceiver);
 
-
         // 상태 창 설정 - 사용자 이름
         StatusBar statusBar = StatusBar.getStatusBar();
         statusBar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),

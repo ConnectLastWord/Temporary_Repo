@@ -1,8 +1,8 @@
 package lect.chat.client;
 
+import lect.chat.client.connect.ChatSocketListener;
 import lect.chat.client.event.ChatConnector;
-import lect.chat.client.event.ChatSocketListener;
-import lect.chat.server.MessageHandlerManager;
+
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
