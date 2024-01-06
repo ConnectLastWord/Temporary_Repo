@@ -1,5 +1,6 @@
 package lect.chat.server.api;
 
+import lect.chat.server.application.messageHandler.MessageHandler;
 import lect.chat.server.application.messageHandler.MessageHandlerImpl;
 
 import java.io.IOException;

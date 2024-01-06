@@ -30,10 +30,13 @@ public class UserRepo {
         clientList.remove(user.getChatName());
     }
 
-
     // 모든 사용자 조회
     public List<User> getValues() {
         return clientList.values().stream().toList();
+    }
+
+    public User getValue(String chatName) {
+        return clientList.get(chatName);
     }
 
     public boolean isContains(String userName) {

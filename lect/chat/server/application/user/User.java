@@ -14,35 +14,27 @@ public abstract class User {
     private String host;
     private String chatRoomName;
 
-    public User(Socket socket, BufferedReader br, PrintWriter pw, String host) {
+    public User(Socket socket, String userId, BufferedReader br, PrintWriter pw, String host) {
+        this.id = userId;
         this.socket = socket;
         this.br = br;
         this.pw = pw;
         this.host = host;
     }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setChatName(String name) {
-        this.chatName = name;
-    }
-
-    public void setChatRoomName(String chatRoomName) {
-        this.chatRoomName = chatRoomName;
-    }
-
-    public String readLine() throws IOException {
-        return br.readLine();
-    }
-
     public void close() {
         try {
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setChatName(String chatName) {
+        this.chatName = chatName;
+    }
+
+    public void setChatRoomName(String chatRoomName) {
+        this.chatRoomName = chatRoomName;
     }
 
     public String getId() {
@@ -60,8 +52,10 @@ public abstract class User {
     public String getChatName() {
         return chatName;
     }
-
     public void println(String msg) {
         pw.println(msg);
+    }
+    public String readLine() throws IOException {
+        return br.readLine();
     }
 }
