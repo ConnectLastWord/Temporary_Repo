@@ -12,6 +12,7 @@ public class AnonymousUser extends User {
 //    static long idx = 1;
     private final static Stack<Integer> idxManager = new Stack<>();
     static{
+        // anonymous user 인덱스 관리자
         int maxAnonymousSize = 100;
         for(int idx=maxAnonymousSize;idx>0;idx--)
             idxManager.push(idx);

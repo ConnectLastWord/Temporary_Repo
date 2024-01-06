@@ -20,8 +20,8 @@ public class UserFactory {
     public User getUser(char protocol, Socket socket, String userName, String userId, BufferedReader br, PrintWriter pw, String host) {
         if(protocol == ChatCommandUtil.CREATE_DEFAULT_USER)
             return new DefaultUser(socket, userName, userId, br, pw, host);
-//        else if(protocol == ChatCommandUtil.CREATE_ANONYMOUS_USER)
-//            return new AnonymousUser();
+        else if(protocol == ChatCommandUtil.CREATE_ANONYMOUS_USER)
+            return new AnonymousUser(socket, userId, br, pw, host);
         return null;
     }
 }
