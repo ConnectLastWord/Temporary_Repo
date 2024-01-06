@@ -18,7 +18,7 @@ public interface MessageHandler {
 
     public void close();
 
-    public void close(String userName);
+    public void close(String chatName);
 
     public String createMessage(char protocol, String s);
 }
