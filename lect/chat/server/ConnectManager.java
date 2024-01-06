@@ -6,10 +6,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.Buffer;
 
-public class ConnectManager {
-    private Socket socket;
-    BufferedReader br;
-    private PrintWriter pw;
+public class ConnectManager extends Messenger{
+
     private static ConnectManager instance;
     private ConnectManager() {
     }

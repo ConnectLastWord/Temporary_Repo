@@ -1,14 +1,13 @@
 package lect.chat.server.application.user;
 
+import lect.chat.server.Messenger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public abstract class User {
-    Socket socket;
-    BufferedReader br;
-    PrintWriter pw;
+public abstract class User extends Messenger {
     private String chatName;
     private String id;
     private String host;

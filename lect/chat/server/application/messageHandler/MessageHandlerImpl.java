@@ -1,6 +1,7 @@
 package lect.chat.server.application.messageHandler;
 
 import lect.chat.server.ConnectManager;
+import lect.chat.server.Messenger;
 import lect.chat.server.application.group.GroupManager;
 import lect.chat.server.application.user.User;
 import lect.chat.server.application.user.UserManager;
@@ -19,11 +20,11 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
 //    private User user;
     String chatName;
     // 모든 사용자 관리자
-    private UserManager userManager;
+    private final UserManager userManager;
     // 채팅방 관리자
-    private GroupManager groupManger;
+    private final GroupManager groupManger;
     // 로그인 관리자
-    private ConnectManager connectManager;
+    private final ConnectManager connectManager;
     public MessageHandlerImpl(Socket s) throws IOException {
         userManager = UserManager.getInstance();
         groupManger = GroupManager.getInstance();
@@ -36,14 +37,15 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
     public void run() {
         String msg;
         try {
-            msg = getLoginMessage();
+            msg = getMessage(connectManager);
             processMessage(msg);
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
+            User user = userManager.getUser(chatName);
             while (true) {
-                msg = getMessage();
+                msg = getMessage(user);
                 if (msg == null) {
                     break;
                 }
@@ -72,9 +74,12 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
         return msgBuilder.toString();
     }
 
-    public void sendMessage(String msg) {
-        User user = userManager.getUser(chatName);
-        user.println(msg);
+    public String getMessage(Messenger messenger) throws IOException {
+        return messenger.readLine();
+    }
+
+    public void sendMessage(Messenger messenger, String msg) {
+        messenger.println(msg);
     }
 
     // 브로드 캐스트
@@ -82,19 +87,6 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
         for (User user : targetList) {
             user.println(msg);
         }
-    }
-
-    public String getLoginMessage() throws IOException {
-        return connectManager.readLine();
-    }
-
-    public void sendLoginMessage(String msg) {
-        connectManager.println(msg);
-    }
-
-    public String getMessage() throws IOException {
-        User user = userManager.getUser(chatName);
-        return user.readLine();
     }
 
     public void close() {
@@ -141,15 +133,16 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
                 String[] nameWithId = msg.split("\\|");
                 if(userManager.isContains(chatName)) {
                     System.out.println("fail");
-                    sendLoginMessage(createMessage(CHECK_USER_NAME, "false"));
+                    sendMessage(connectManager, createMessage(CHECK_USER_NAME, "false"));
                 } else {
                     // user가 존재하지 않는 경우에는 로그인
-                    sendLoginMessage(createMessage(CHECK_USER_NAME, userManager.getChatName(chatName)));
-                    sendLoginMessage(createMessage(ROOM_LIST, groupManger.getRoomsToString()));
+                    sendMessage(connectManager, createMessage(CHECK_USER_NAME, userManager.getChatName(chatName)));
+                    sendMessage(connectManager, createMessage(ROOM_LIST, groupManger.getRoomsToString()));
                     Socket socket = connectManager.getSocket();
                     chatName = userManager.addUser(CREATE_DEFAULT_USER, socket, nameWithId[0], nameWithId[1], new BufferedReader(new InputStreamReader(socket.getInputStream())),
                             new PrintWriter(socket.getOutputStream(), true), socket.getInetAddress().getHostAddress());
-                    sendMessage(createMessage(CHECK_USER_NAME, userManager.getChatName(chatName)));
+                    user = userManager.getUser(chatName);
+                    sendMessage(user, createMessage(CHECK_USER_NAME, userManager.getChatName(chatName)));
                 }
                 break;
             // 채팅방 접속
@@ -174,7 +167,8 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
             // 채팅방 생성
             case CREATE_ROOM:
                 if (groupManger.isContains(msg)) {
-                    sendMessage(createMessage(CREATE_ROOM, "이미 존재하는 채팅방"));
+                    user = userManager.getUser(chatName);
+                    sendMessage(user, createMessage(CREATE_ROOM, "이미 존재하는 채팅방"));
                 } else {
                     groupManger.addChatRoom(msg);
                     broadcastMessage(userManager.findAllMessageHandler(), createMessage(ROOM_LIST, groupManger.getRoomsToString()));
