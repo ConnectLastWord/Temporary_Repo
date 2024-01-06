@@ -8,6 +8,7 @@ import lect.chat.client.connect.service.MessageReceiver;
 import lect.chat.client.model.ChatRoom;
 import lect.chat.client.model.ChatUser;
 import lect.chat.protocol.ChatCommandUtil;
+import lect.chat.protocol.ErrorCommandUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,6 +24,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+
+import static lect.chat.protocol.ErrorCommandUtil.*;
 
 // 컴포넌트 기반 신호 리스너
 @SuppressWarnings("serial")
@@ -179,8 +182,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             case ChatCommandUtil.CHECK_USER_NAME:
                 Connector connector = Connector.getInstance();
                 if(msg.equals("false")) {
-                    JOptionPane.showMessageDialog(this, "이미 존재하는 닉네임", "Login Fail",
-                        JOptionPane.WARNING_MESSAGE);
+                    displayErrorMessage("이미 존재하는 닉네임입니다. 다른 닉네임을 사용해주세요", LOG_IN_FAIL);
                     connector.disConnect();
                     connectDisconnect.toButton(CommandButton.CMD_CONNECT);
                     room = null;
@@ -191,7 +193,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 }
                 break;
             case ChatCommandUtil.CREATE_ROOM:
-                JOptionPane.showMessageDialog(this, msg, "Fail Create ChatRoom", JOptionPane.WARNING_MESSAGE);
+                displayErrorMessage(msg, ROOM_CREATE_FAIL);
                 break;
             default:
                 break;
@@ -239,8 +241,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 if (roomList.getSelectedValue() != room) {
                     room = (ChatRoom) roomList.getSelectedValue();
                     if (room == null) {
-                        JOptionPane.showMessageDialog(this, "Room to Enter to must be selected", "EnterChat",
-                                JOptionPane.WARNING_MESSAGE);
+                        displayErrorMessage("들어갈 방을 선택해주세요", ROOM_ENTER_FAIL);
                         return;
                     }
                     sendMessage(ChatCommandUtil.ROOM_LIST, room.getName());
@@ -251,8 +252,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                     chatDispArea.initDisplay();
                     return;
                 }
-                JOptionPane.showMessageDialog(this, "이미 접속해있는 방입니다.", "ChatRoom",
-                        JOptionPane.WARNING_MESSAGE);
+                displayErrorMessage("이미 접속한 방입니다", ROOM_ENTER_FAIL);
             }
             // 채팅방 생성 버튼
             else {
@@ -261,8 +261,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                     return;
                 }
                 if (chatName.trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "방 이름은 공백이 안됩니다", "Faild Create ChatRoom",
-                            JOptionPane.WARNING_MESSAGE);
+                    displayErrorMessage("방 이름은 공백이 안됩니다", ROOM_CREATE_FAIL);
                 }
                 if (connector.socketAvailable()) {
                     sendMessage(ChatCommandUtil.CREATE_ROOM, chatName);
@@ -346,5 +345,10 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         msgBuilder.append("]");
         msgBuilder.append(msg);
         return msgBuilder.toString();
+    }
+
+    private void displayErrorMessage(String message, String title) {
+        JOptionPane.showMessageDialog(this, message, title,
+                JOptionPane.WARNING_MESSAGE);
     }
 }
