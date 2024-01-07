@@ -37,13 +37,13 @@ public abstract class User {
         return br.readLine();
     }
 
-    public void close() {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void close() {
+//        try {
+//            socket.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public String getId() {
         return id;

@@ -4,6 +4,7 @@ import lect.chat.protocol.ChatCommandUtil;
 import lect.chat.server.application.controller.Controller;
 import lect.chat.server.application.group.GroupManager;
 
+import java.io.IOException;
 import java.util.List;
 
 public class UserController implements Controller {
@@ -13,14 +14,14 @@ public class UserController implements Controller {
     private char command;
     private String msg;
 
-    public UserController() {
+    public UserController(User user) throws IOException {
+        this.user = user;
         this.uM = UserManager.getInstance();
         this.gM = GroupManager.getInstance();
     }
 
     @Override
-    public void handleController(User user, char command, String msg) {
-        this.user = user;
+    public void handleController(char command, String msg) {
         this.command = command;
         this.msg = msg;
         processMessage();
@@ -56,7 +57,6 @@ public class UserController implements Controller {
                     broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(user.getChatRoomName())));
                 }
                 break;
-
         }
     }
 
@@ -65,7 +65,7 @@ public class UserController implements Controller {
     }
 
     // 브로드 캐스트
-    private <T extends User> void broadcastMessage(List<T> targetList, String msg) {
+    public <T extends User> void broadcastMessage(List<T> targetList, String msg) {
         for (User user : targetList) {
             user.println(msg);
         }

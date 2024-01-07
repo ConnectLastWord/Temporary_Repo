@@ -77,12 +77,14 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
                         return true;
                     }
                 default:
-                    return false;
+                    socket.close();
+                    break;
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Failed to connect chat server", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
+        return false;
     }
 
     @Override

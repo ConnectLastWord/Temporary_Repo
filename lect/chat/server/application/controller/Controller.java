@@ -1,9 +1,7 @@
 package lect.chat.server.application.controller;
 
-import lect.chat.server.application.user.User;
-
 public interface Controller {
-    void handleController(User user, char command, String msg);
+    void handleController(char command, String msg);
 
     void processMessage();
 

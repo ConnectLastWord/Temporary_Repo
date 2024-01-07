@@ -14,16 +14,17 @@ import java.net.Socket;
 
 // 사용자 메시지를 전달하기 위한 구현체 = 하나의 클라이언트와 통신하기 위한 객체, 스레드
 public class MessageHandlerImpl implements Runnable, MessageHandler {
-    private User user;
+    public BufferedReader br;
     private GroupController gC;
     private UserController uC;
 
     public MessageHandlerImpl(Socket s) throws IOException {
-        user = new DefaultUser(s,
+        br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        User user = new DefaultUser(s,
                 new BufferedReader(new InputStreamReader(s.getInputStream())),
                 new PrintWriter(s.getOutputStream(), true), s.getInetAddress().getHostAddress());
-        gC = new GroupController();
-        uC = new UserController();
+        gC = new GroupController(user);
+        uC = new UserController(user);
     }
 
     public void run() {
@@ -46,50 +47,20 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
         System.out.println("Terminating ClientHandler");
     }
 
-    @Override
-    public String getId() {
-        return null;
-    }
-
-    @Override
-    public String getName() {
-        return null;
-    }
-
-    @Override
-    public String getRoomName() {
-        return null;
-    }
-
-    @Override
-    public String getFrom() {
-        return null;
-    }
-
-    @Override
-    public void sendMessage(String msg) {
-
-    }
-
     public String getMessage() throws IOException {
-        return user.readLine();
+        return br.readLine();
     }
 
     public void close() {
-        user.close();
-    }
-
-    public void close(String userName) {
-        user.close();
-        handleRequest(String.valueOf(ChatCommandUtil.LOGOUT));
-    }
-
-    @Override
-    public String createMessage(char protocol, String s) {
-        return null;
+        try {
+            br.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // 핸들러는 해당 요청이 어느 컨트롤러로 가야하는 지?
+    @Override
     public void handleRequest(String msg) {
         char command = ChatCommandUtil.getCommand(msg);// 첫번째 글자 떼옴
         //msg = [b]채팅방- 2|massage
@@ -97,27 +68,27 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
         switch (command) {
             // 로그인
             case ChatCommandUtil.LOGIN:
-                uC.handleController(user, command, msg);
+                uC.handleController(command, msg);
                 break;
             //  로그아웃
             case ChatCommandUtil.LOGOUT:
-                uC.handleController(user, command, msg);
+                uC.handleController(command, msg);
                 break;
             // 채팅방 메시지
             case ChatCommandUtil.NORMAL:
-                gC.handleController(user, command, msg);
+                gC.handleController(command, msg);
                 break;
             // 채팅방 생성
             case ChatCommandUtil.CREATE_ROOM:
-                gC.handleController(user, command, msg);
+                gC.handleController(command, msg);
                 break;
             // 채팅방 삭제
             case ChatCommandUtil.REMOVE_ROOM:
-                gC.handleController(user, command, msg);
+                gC.handleController(command, msg);
                 break;
             // 채팅방 접속
             case ChatCommandUtil.ENTER_ROOM:
-                gC.handleController(user, command, msg);
+                gC.handleController(command, msg);
                 break;
             default:
                 System.out.printf("ChatCommand %c \n", command);

@@ -5,6 +5,7 @@ import lect.chat.server.application.controller.Controller;
 import lect.chat.server.application.user.User;
 import lect.chat.server.application.user.UserManager;
 
+import java.io.IOException;
 import java.util.List;
 
 public class GroupController implements Controller {
@@ -14,14 +15,14 @@ public class GroupController implements Controller {
     private char command;
     private String msg;
 
-    public GroupController() {
+    public GroupController(User user) throws IOException {
+        this.user = user;
         this.gM = GroupManager.getInstance();
         this.uM = UserManager.getInstance();
     }
 
     @Override
-    public void handleController(User user, char command, String msg) {
-        this.user = user;
+    public void handleController(char command, String msg) {
         this.command = command;
         this.msg = msg;
         processMessage();
@@ -32,12 +33,14 @@ public class GroupController implements Controller {
         switch (command) {
             case ChatCommandUtil.ENTER_ROOM:
                 if (user.getChatRoomName() != null) {
+                    // 내 정보 삭제할 채팅방 이름
+                    String removeChatRoomName = user.getChatRoomName();
                     // 삭제할 채팅방 정보 조회
                     List<User> targetList = gM.removeUserByChatRoom(user.getChatRoomName(), user);
                     // 퇴장 메시지 브로드 캐스트
                     broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM_MESSAGE, user.getChatName() + " has just left [" + user.getChatRoomName() + "] room"));
                     // 유저 리스트 브로드 캐스트
-                    broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(user.getChatRoomName())));
+                    broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(removeChatRoomName)));
                 }
                 user.setChatRoomName(msg);
                 // 생성할 채팅방 정보 조회
@@ -73,7 +76,7 @@ public class GroupController implements Controller {
     }
 
     // 브로드 캐스트
-    private <T extends User> void broadcastMessage(List<T> targetList, String msg) {
+    public <T extends User> void broadcastMessage(List<T> targetList, String msg) {
         for (User user : targetList) {
             user.println(msg);
         }
