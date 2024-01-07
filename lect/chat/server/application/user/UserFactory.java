@@ -17,11 +17,11 @@ public class UserFactory {
         return instance;
     }
 
-    public User getUser(char protocol, Socket socket, String userName, String userId, BufferedReader br, PrintWriter pw, String host) {
+    public User getUser(char protocol, String userName, String userId, String host) {
         if(protocol == ChatCommandUtil.CREATE_DEFAULT_USER)
-            return new DefaultUser(socket, userName, userId, br, pw, host);
+            return new DefaultUser(userName, userId, host);
         else if(protocol == ChatCommandUtil.CREATE_ANONYMOUS_USER)
-            return new AnonymousUser(socket, userId, br, pw, host);
+            return new AnonymousUser(userId, host);
         return null;
     }
 }

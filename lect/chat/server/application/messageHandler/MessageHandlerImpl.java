@@ -3,6 +3,7 @@ package lect.chat.server.application.messageHandler;
 import lect.chat.server.LoginMessenger;
 import lect.chat.server.Messenger;
 import lect.chat.server.SocketManager;
+import lect.chat.server.UserMessenger;
 import lect.chat.server.application.group.GroupManager;
 import lect.chat.server.application.user.User;
 import lect.chat.server.application.user.UserManager;
@@ -27,8 +28,11 @@ public class MessageHandlerImpl implements MessageHandler {
     // 소켓 관리자
     private final SocketManager socketManager;
     // 메시지 처리 전략
+    Messenger strategy;
+    // login 전략
     LoginMessenger loginMessenger;
-//    UserMessenger userMessenger;
+    // user 전략
+    UserMessenger userMessenger;
     public MessageHandlerImpl(SocketManager socketManager) throws IOException {
         userManager = UserManager.getInstance();
         groupManger = GroupManager.getInstance();
@@ -40,12 +44,27 @@ public class MessageHandlerImpl implements MessageHandler {
                 new BufferedReader(new InputStreamReader(socket.getInputStream())),
                 new PrintWriter(socket.getOutputStream(), true)
         );
+        // user 전략 초기화
+        userMessenger = new UserMessenger(
+                new BufferedReader(new InputStreamReader(socket.getInputStream())),
+                new PrintWriter(socket.getOutputStream(), true)
+        );
+    }
+
+    void setStrategy(Messenger strategy) {
+        this.strategy = strategy;
+    }
+
+    void setStrategy(Messenger strategy, String chatName) {
+        this.strategy = strategy;
+        userMessenger.setChatName(chatName);
     }
 
     public void run() {
         String msg;
         try {
-            msg = getMessage(loginMessenger);
+            setStrategy(loginMessenger);
+            msg = getMessage();
             processMessage(msg);
         } catch (IOException e) {
             e.printStackTrace();
@@ -53,7 +72,8 @@ public class MessageHandlerImpl implements MessageHandler {
         try {
             User user = userManager.getUser(chatName);
             while (true) {
-                msg = getMessage(user);
+                setStrategy(userMessenger, user.getChatName());
+                msg = getMessage();
                 if (msg == null) {
                     break;
                 }
@@ -82,29 +102,29 @@ public class MessageHandlerImpl implements MessageHandler {
         return msgBuilder.toString();
     }
 
-    public String getMessage(Messenger messenger) throws IOException {
-        return messenger.readLine();
+    public String getMessage() throws IOException {
+        return strategy.readLine();
     }
 
-    public void sendMessage(Messenger messenger, String msg) {
-        messenger.println(msg);
+    public void sendMessage(String msg) {
+        strategy.println(msg);
     }
 
     // 브로드 캐스트
     private <T extends User> void broadcastMessage(List<T> targetList, String msg) {
-        for (User user : targetList) {
-            user.println(msg);
-        }
+//        for (User user : targetList) {
+//            user.println(msg);
+//        }
     }
 
     public void close() {
-        User user = userManager.getUser(chatName);
-        user.close();
+//        User user = userManager.getUser(chatName);
+//        user.close();
     }
 
     public void close(String chatName) {
         User user = userManager.getUser(chatName);
-        user.close();
+//        user.close();
         userManager.removeUser(user);
     }
 
@@ -137,20 +157,23 @@ public class MessageHandlerImpl implements MessageHandler {
         switch (command) {
             // 유저 이름 유효성 검사
             case CHECK_USER_NAME:
-                System.out.println("Check user 실행");
                 String[] nameWithId = msg.split("\\|");
+                setStrategy(loginMessenger);
                 if(userManager.isContains(chatName)) {
                     System.out.println("fail");
-                    sendMessage(loginMessenger, createMessage(CHECK_USER_NAME, "false"));
+                    sendMessage(createMessage(CHECK_USER_NAME, "false"));
                 } else {
                     // user가 존재하지 않는 경우에는 로그인
-                    sendMessage(loginMessenger, createMessage(CHECK_USER_NAME, userManager.getChatName(chatName)));
-                    sendMessage(loginMessenger, createMessage(ROOM_LIST, groupManger.getRoomsToString()));
+                    sendMessage(createMessage(CHECK_USER_NAME, userManager.getChatName(chatName)));
+                    sendMessage(createMessage(ROOM_LIST, groupManger.getRoomsToString()));
                     Socket socket = socketManager.getSocket();
-                    chatName = userManager.addUser(CREATE_DEFAULT_USER, socket, nameWithId[0], nameWithId[1], new BufferedReader(new InputStreamReader(socket.getInputStream())),
-                            new PrintWriter(socket.getOutputStream(), true), socket.getInetAddress().getHostAddress());
+                    chatName = userManager.addUser(
+                            CREATE_DEFAULT_USER,
+                            nameWithId[0], nameWithId[1],
+                            socket.getInetAddress().getHostAddress());
                     user = userManager.getUser(chatName);
-                    sendMessage(user, createMessage(CHECK_USER_NAME, userManager.getChatName(chatName)));
+                    setStrategy(userMessenger, user.getChatName());
+                    sendMessage(createMessage(CHECK_USER_NAME, userManager.getChatName(chatName)));
                 }
                 break;
             // 채팅방 접속
@@ -176,7 +199,8 @@ public class MessageHandlerImpl implements MessageHandler {
             case CREATE_ROOM:
                 if (groupManger.isContains(msg)) {
                     user = userManager.getUser(chatName);
-                    sendMessage(user, createMessage(CREATE_ROOM, "이미 존재하는 채팅방"));
+                    setStrategy(userMessenger, user.getChatName());
+                    sendMessage(createMessage(CREATE_ROOM, "이미 존재하는 채팅방"));
                 } else {
                     groupManger.addChatRoom(msg);
                     broadcastMessage(userManager.findAllMessageHandler(), createMessage(ROOM_LIST, groupManger.getRoomsToString()));

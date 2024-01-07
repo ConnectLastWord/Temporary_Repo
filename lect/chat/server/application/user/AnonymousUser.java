@@ -16,19 +16,22 @@ public class AnonymousUser extends User {
             idxManager.push(idx);
     }
 
-    public AnonymousUser(Socket socket, String userId, BufferedReader br, PrintWriter pw, String host) {
-        super(socket, userId, br, pw, host);
+    public AnonymousUser(String userId, String host) {
+        super(userId, host);
         setChatName(String.format("Anonymous %d", idxManager.pop()));
     }
 
     public void close() {
-        try {
-            socket.close();
-            char userIdx = getChatName().charAt(getChatName().length()-1);
-            int idx = Character.getNumericValue(userIdx);
-            idxManager.push(idx);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        char userIdx = getChatName().charAt(getChatName().length()-1);
+        int idx = Character.getNumericValue(userIdx);
+        idxManager.push(idx);
+//        try {
+//            socket.close();
+//            char userIdx = getChatName().charAt(getChatName().length()-1);
+//            int idx = Character.getNumericValue(userIdx);
+//            idxManager.push(idx);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }

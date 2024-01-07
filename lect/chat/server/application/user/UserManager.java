@@ -24,8 +24,8 @@ public class UserManager {
     }
 
     // 사용자 추가
-    public String addUser(char protocol, Socket socket, String chatName, String chatId, BufferedReader br, PrintWriter pw, String host) {
-        User user = userFactory.getUser(protocol, socket, chatName, chatId, br, pw, host);
+    public String addUser(char protocol, String chatName, String chatId, String host) {
+        User user = userFactory.getUser(protocol, chatName, chatId, host);
         userRepo.add(user);
 
         return user.getChatName();
