@@ -340,7 +340,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         roomList.addNewRooms(list);
     }
 
-    private void sendMessage(char command, String msg) {
+    public void sendMessage(char command, String msg) {
         writer.println(createMessage(command, msg));
     }
 

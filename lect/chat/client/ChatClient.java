@@ -5,6 +5,7 @@ import lect.chat.client.connect.ChatConnector;
 import lect.chat.client.connect.ChatSocketListener;
 import lect.chat.client.connect.api.ChatPanel;
 import lect.chat.client.connect.service.ChatMessageReceiver;
+import lect.chat.protocol.ChatCommandUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,12 +21,13 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
     private String id;
     private ArrayList<ChatSocketListener> sListeners = new ArrayList<>();
     private JFrame chatWindow;
+    private ChatPanel chatPanel;
 
     ChatClient() {
         id = new java.rmi.server.UID().toString();
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-        ChatPanel chatPanel = new ChatPanel(this);
+        chatPanel = new ChatPanel(this);
         chatPanel.setBorder(BorderFactory.createEtchedBorder());
         StatusBar statusBar = StatusBar.getStatusBar();
         statusBar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
@@ -138,7 +140,9 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
         sListeners.remove(lsnr);
     }
 
+    @Override
     public void windowClosing(WindowEvent e) {
+        chatPanel.sendMessage(ChatCommandUtil.LOGOUT, userName);
         disConnect();
         System.exit(0);
     }
