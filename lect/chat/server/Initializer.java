@@ -11,20 +11,18 @@ import java.net.Socket;
 
 public class Initializer implements Runnable{
     SocketManager socketManager;
-    LoginMessenger loginMessenger;
+    MessageHandler messageHandler;
 
     public Initializer(Socket socket) throws IOException {
-        socketManager = new SocketManager();
-        socketManager.setSocket(socket);
-
-        // login 전략 초기화
-        loginMessenger = LoginMessenger.getInstance();
-        loginMessenger.init(socket, new BufferedReader(new InputStreamReader(socket.getInputStream())),
-                new PrintWriter(socket.getOutputStream(), true));
+        socketManager = new SocketManager(socket);
     }
     @Override
     public void run() {
-        MessageHandler messageHandler = new MessageHandlerImpl(socketManager);
-        messageHandler.run();
+        try {
+            messageHandler = new MessageHandlerImpl(socketManager);
+            messageHandler.run();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

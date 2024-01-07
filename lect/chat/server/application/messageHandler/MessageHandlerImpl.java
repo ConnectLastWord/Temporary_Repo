@@ -25,14 +25,21 @@ public class MessageHandlerImpl implements MessageHandler {
     // 채팅방 관리자
     private final GroupManager groupManger;
     // 소켓 관리자
-    private SocketManager socketManager;
+    private final SocketManager socketManager;
     // 메시지 처리 전략
     LoginMessenger loginMessenger;
-    public MessageHandlerImpl(SocketManager socketManager) {
+//    UserMessenger userMessenger;
+    public MessageHandlerImpl(SocketManager socketManager) throws IOException {
         userManager = UserManager.getInstance();
         groupManger = GroupManager.getInstance();
         this.socketManager = socketManager;
-        loginMessenger = LoginMessenger.getInstance();
+        Socket socket = this.socketManager.getSocket();
+
+        // login 전략 초기화
+        loginMessenger = new LoginMessenger(
+                new BufferedReader(new InputStreamReader(socket.getInputStream())),
+                new PrintWriter(socket.getOutputStream(), true)
+        );
     }
 
     public void run() {
@@ -139,7 +146,7 @@ public class MessageHandlerImpl implements MessageHandler {
                     // user가 존재하지 않는 경우에는 로그인
                     sendMessage(loginMessenger, createMessage(CHECK_USER_NAME, userManager.getChatName(chatName)));
                     sendMessage(loginMessenger, createMessage(ROOM_LIST, groupManger.getRoomsToString()));
-                    Socket socket = loginMessenger.getSocket();
+                    Socket socket = socketManager.getSocket();
                     chatName = userManager.addUser(CREATE_DEFAULT_USER, socket, nameWithId[0], nameWithId[1], new BufferedReader(new InputStreamReader(socket.getInputStream())),
                             new PrintWriter(socket.getOutputStream(), true), socket.getInetAddress().getHostAddress());
                     user = userManager.getUser(chatName);

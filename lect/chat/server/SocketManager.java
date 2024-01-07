@@ -5,7 +5,7 @@ import java.net.Socket;
 public class SocketManager {
     private Socket socket;
 
-    public void setSocket(Socket socket) {
+    public SocketManager(Socket socket) {
         this.socket = socket;
     }
 

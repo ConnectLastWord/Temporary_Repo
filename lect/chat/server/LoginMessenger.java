@@ -2,35 +2,24 @@ package lect.chat.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Objects;
 
 public class LoginMessenger extends Messenger{
-
-    private static LoginMessenger instance;
-    private LoginMessenger() {
-    }
-
-    public static LoginMessenger getInstance() {
-        if(instance == null)
-            instance = new LoginMessenger();
-        return instance;
-    }
-    public String readLine() throws IOException {
-        return br.readLine();
-    }
-
-    public void println(String msg) {
-        pw.println(msg);
-    }
-
-    public void init(Socket socket, BufferedReader br, PrintWriter pw) {
-        this.socket = socket;
+    public LoginMessenger(BufferedReader br, PrintWriter pw) {
         this.br = br;
         this.pw = pw;
     }
 
-    public Socket getSocket() {
-        return socket;
+    @Override
+    public String readLine() throws IOException {
+        return br.readLine();
+    }
+
+    @Override
+    public void println(Object... objects) {
+        pw.println(objects[0]);
     }
 }
