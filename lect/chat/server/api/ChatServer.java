@@ -1,7 +1,6 @@
 package lect.chat.server.api;
 
-import lect.chat.server.application.messageHandler.MessageHandler;
-import lect.chat.server.application.messageHandler.MessageHandlerImpl;
+import lect.chat.server.Initializer;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -33,7 +32,7 @@ public class ChatServer implements Runnable {
                 s = ss.accept();
                 System.out.format("Client[%s] accepted\n", s.getInetAddress().getHostName());
                 // 클라이언트 연결 소켓을 ClientHandler 생성자에게 전달
-                new Thread(new MessageHandlerImpl(s)).start();
+                new Thread(new Initializer(s)).start();
             }
         } catch (IOException e) {
             System.out.println("Terminating ChatServer: " + e.getMessage());

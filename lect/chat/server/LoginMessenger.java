@@ -4,17 +4,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.nio.Buffer;
 
-public class ConnectManager extends Messenger{
+public class LoginMessenger extends Messenger{
 
-    private static ConnectManager instance;
-    private ConnectManager() {
+    private static LoginMessenger instance;
+    private LoginMessenger() {
     }
 
-    public static ConnectManager getInstance() {
+    public static LoginMessenger getInstance() {
         if(instance == null)
-            instance = new ConnectManager();
+            instance = new LoginMessenger();
         return instance;
     }
     public String readLine() throws IOException {

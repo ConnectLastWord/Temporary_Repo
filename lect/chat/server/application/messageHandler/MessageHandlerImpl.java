@@ -1,7 +1,8 @@
 package lect.chat.server.application.messageHandler;
 
-import lect.chat.server.ConnectManager;
+import lect.chat.server.LoginMessenger;
 import lect.chat.server.Messenger;
+import lect.chat.server.SocketManager;
 import lect.chat.server.application.group.GroupManager;
 import lect.chat.server.application.user.User;
 import lect.chat.server.application.user.UserManager;
@@ -15,29 +16,29 @@ import java.util.List;
 
 import static lect.chat.protocol.ChatCommandUtil.*;
 
-// 사용자 메시지를 전달하기 위한 구현체 = 하나의 클라이언트와 통신하기 위한 객체, 스레드
-public class MessageHandlerImpl implements Runnable, MessageHandler {
+// 사용자 메시지를 전달하기 위한 구현체 = 하나의 클라이언트와 통신하기 위한 객체
+public class MessageHandlerImpl implements MessageHandler {
 //    private User user;
     String chatName;
     // 모든 사용자 관리자
     private final UserManager userManager;
     // 채팅방 관리자
     private final GroupManager groupManger;
-    // 로그인 관리자
-    private final ConnectManager connectManager;
-    public MessageHandlerImpl(Socket s) throws IOException {
+    // 소켓 관리자
+    private SocketManager socketManager;
+    // 메시지 처리 전략
+    LoginMessenger loginMessenger;
+    public MessageHandlerImpl(SocketManager socketManager) {
         userManager = UserManager.getInstance();
         groupManger = GroupManager.getInstance();
-        connectManager = ConnectManager.getInstance();
-        connectManager.init(s, new BufferedReader(new InputStreamReader(s.getInputStream())),
-                new PrintWriter(s.getOutputStream(), true));
-        System.out.println("message handler 생성");
+        this.socketManager = socketManager;
+        loginMessenger = LoginMessenger.getInstance();
     }
 
     public void run() {
         String msg;
         try {
-            msg = getMessage(connectManager);
+            msg = getMessage(loginMessenger);
             processMessage(msg);
         } catch (IOException e) {
             e.printStackTrace();
@@ -133,12 +134,12 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
                 String[] nameWithId = msg.split("\\|");
                 if(userManager.isContains(chatName)) {
                     System.out.println("fail");
-                    sendMessage(connectManager, createMessage(CHECK_USER_NAME, "false"));
+                    sendMessage(loginMessenger, createMessage(CHECK_USER_NAME, "false"));
                 } else {
                     // user가 존재하지 않는 경우에는 로그인
-                    sendMessage(connectManager, createMessage(CHECK_USER_NAME, userManager.getChatName(chatName)));
-                    sendMessage(connectManager, createMessage(ROOM_LIST, groupManger.getRoomsToString()));
-                    Socket socket = connectManager.getSocket();
+                    sendMessage(loginMessenger, createMessage(CHECK_USER_NAME, userManager.getChatName(chatName)));
+                    sendMessage(loginMessenger, createMessage(ROOM_LIST, groupManger.getRoomsToString()));
+                    Socket socket = loginMessenger.getSocket();
                     chatName = userManager.addUser(CREATE_DEFAULT_USER, socket, nameWithId[0], nameWithId[1], new BufferedReader(new InputStreamReader(socket.getInputStream())),
                             new PrintWriter(socket.getOutputStream(), true), socket.getInetAddress().getHostAddress());
                     user = userManager.getUser(chatName);
