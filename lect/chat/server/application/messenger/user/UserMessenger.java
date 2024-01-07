@@ -1,6 +1,6 @@
-package lect.chat.server.application.user;
+package lect.chat.server.application.messenger.user;
 
-import lect.chat.server.Messenger;
+import lect.chat.server.application.messenger.Messenger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,9 +13,8 @@ public abstract class UserMessenger extends Messenger {
     private String host;
     private String chatRoomName;
 
-    public UserMessenger(Socket socket, String userId, BufferedReader br, PrintWriter pw, String host) {
+    public UserMessenger(String userId, BufferedReader br, PrintWriter pw, String host) {
         this.id = userId;
-        this.socket = socket;
         this.br = br;
         this.pw = pw;
         this.host = host;
@@ -51,9 +50,13 @@ public abstract class UserMessenger extends Messenger {
     public String getChatName() {
         return chatName;
     }
+
+    @Override
     public void println(String msg) {
         pw.println(msg);
     }
+
+    @Override
     public String readLine() throws IOException {
         return br.readLine();
     }

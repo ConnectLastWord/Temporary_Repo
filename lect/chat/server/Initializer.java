@@ -1,12 +1,11 @@
 package lect.chat.server;
 
+import lect.chat.server.application.messenger.LoginMessenger;
 import lect.chat.server.application.messageHandler.MessageHandler;
 import lect.chat.server.application.messageHandler.MessageHandlerImpl;
+import lect.chat.server.application.socket.SocketManager;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 
 public class Initializer implements Runnable{

@@ -1,7 +1,5 @@
 package lect.chat.server.application.messageHandler;
 
-import lect.chat.server.Messenger;
-
 import java.io.IOException;
 
 // ClientHandler가 구현체

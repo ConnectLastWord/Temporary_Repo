@@ -1,4 +1,4 @@
-package lect.chat.server.application.user;
+package lect.chat.server.application.messenger.user;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;

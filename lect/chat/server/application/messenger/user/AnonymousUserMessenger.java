@@ -1,4 +1,4 @@
-package lect.chat.server.application.user;
+package lect.chat.server.application.messenger.user;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,19 +16,14 @@ public class AnonymousUserMessenger extends UserMessenger {
             idxManager.push(idx);
     }
 
-    public AnonymousUserMessenger(Socket socket, String userId, BufferedReader br, PrintWriter pw, String host) {
-        super(socket, userId, br, pw, host);
+    public AnonymousUserMessenger(String userId, BufferedReader br, PrintWriter pw, String host) {
+        super(userId, br, pw, host);
         setChatName(String.format("Anonymous %d", idxManager.pop()));
     }
 
     public void close() {
-        try {
-            socket.close();
-            char userIdx = getChatName().charAt(getChatName().length()-1);
-            int idx = Character.getNumericValue(userIdx);
-            idxManager.push(idx);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        char userIdx = getChatName().charAt(getChatName().length()-1);
+        int idx = Character.getNumericValue(userIdx);
+        idxManager.push(idx);
     }
 }

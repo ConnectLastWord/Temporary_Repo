@@ -1,4 +1,4 @@
-package lect.chat.server;
+package lect.chat.server.application.messenger;
 
 import java.io.BufferedReader;
 import java.io.IOException;

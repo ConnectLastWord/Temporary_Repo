@@ -1,11 +1,11 @@
 package lect.chat.server.application.messageHandler;
 
-import lect.chat.server.LoginMessenger;
-import lect.chat.server.Messenger;
-import lect.chat.server.SocketManager;
+import lect.chat.server.application.messenger.LoginMessenger;
+import lect.chat.server.application.messenger.Messenger;
+import lect.chat.server.application.socket.SocketManager;
 import lect.chat.server.application.group.GroupManager;
-import lect.chat.server.application.user.UserMessenger;
-import lect.chat.server.application.user.UserMessengerManager;
+import lect.chat.server.application.messenger.user.UserMessenger;
+import lect.chat.server.application.messenger.user.UserMessengerManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;

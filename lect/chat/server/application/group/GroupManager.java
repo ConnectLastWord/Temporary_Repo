@@ -1,6 +1,6 @@
 package lect.chat.server.application.group;
 
-import lect.chat.server.application.user.UserMessenger;
+import lect.chat.server.application.messenger.user.UserMessenger;
 
 import java.util.List;
 

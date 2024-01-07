@@ -1,4 +1,4 @@
-package lect.chat.server.application.user;
+package lect.chat.server.application.messenger.user;
 
 import lect.chat.protocol.ChatCommandUtil;
 
@@ -19,9 +19,9 @@ public class UserMessengerFactory {
 
     public UserMessenger getUser(char protocol, Socket socket, String userName, String userId, BufferedReader br, PrintWriter pw, String host) {
         if(protocol == ChatCommandUtil.CREATE_DEFAULT_USER)
-            return new DefaultUserMessenger(socket, userName, userId, br, pw, host);
+            return new DefaultUserMessenger(userName, userId, br, pw, host);
         else if(protocol == ChatCommandUtil.CREATE_ANONYMOUS_USER)
-            return new AnonymousUserMessenger(socket, userId, br, pw, host);
+            return new AnonymousUserMessenger(userId, br, pw, host);
         return null;
     }
 }
