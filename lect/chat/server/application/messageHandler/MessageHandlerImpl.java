@@ -43,10 +43,13 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            // 삭제할 채팅방 정보 조회
-            List<User> targetList = gM.removeUserByChatRoom(user.getChatRoomName(), user);
-            // 퇴장 메시지 브로드 캐스트
-            broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM, user.getChatName() + " has just left [" + user.getChatRoomName() + "] room"));
+            // 채팅방 입장 전 로그아웃 시, 퇴장 메시지 브로드 캐스트 필터
+            if (user.getChatRoomName() != null) {
+                // 삭제할 채팅방 정보 조회
+                List<User> targetList = gM.removeUserByChatRoom(user.getChatRoomName(), user);
+                // 퇴장 메시지 브로드 캐스트
+                broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM, user.getChatName() + " has just left [" + user.getChatRoomName() + "] room"));
+            }
             close();
         }
         System.out.println("Terminating ClientHandler");
@@ -119,6 +122,7 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
                 } else {
                     sendMessage(createMessage(ChatCommandUtil.CHECK_USER_NAME, user.getChatName()));
                     mM.addUser(user);
+                    broadcastMessage(mM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_LIST, gM.getRoomsToString()));
                 }
                 break;
             // 채팅방 접속

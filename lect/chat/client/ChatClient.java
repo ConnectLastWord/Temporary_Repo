@@ -34,7 +34,7 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
         ChatMessageReceiver chatReceiver = new ChatMessageReceiver(this);
         chatReceiver.setMessageReceiver(chatPanel);
 
-        chatWindow = new JFrame("Minimal Chat - Concept Proof");
+        chatWindow = new JFrame("멀티 채팅방");
         contentPane.add(chatPanel);
 
         chatWindow.setContentPane(contentPane);
@@ -59,13 +59,25 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
             for (ChatSocketListener lsnr : sListeners) {
                 lsnr.socketConnected(socket); // 초기화만 하고 init message는 보내지 않음
             }
-            userName = JOptionPane.showInputDialog(chatWindow, "Enter user name:");
-            if (userName == null) {
-                return false;
-            } else {
-                // 이름 검사를 한 후에 init message를 보냄
-                sListeners.get(0).checkUserName(socket);
-                return true;
+            // 접속 유형 옵션 배열 선언
+            String[] loginMode = {"익명 사용자", "일반 사용자"};
+            // 접속 유형 옵션 팝업 상자
+            int loginModeValue = JOptionPane.showOptionDialog(null, "접속 유형을 선택해주세요.", "접속 유형", JOptionPane.PLAIN_MESSAGE, 0, null, loginMode, loginMode[1]);
+            switch (loginModeValue) {
+                case 0: // 익명 사용자
+                    sListeners.get(0).loginByAnoymous(socket);
+                    return true;
+                case 1: // 일반 사용자
+                    userName = JOptionPane.showInputDialog(chatWindow, "Enter user name:");
+                    if (userName == null) {
+                        return false;
+                    } else {
+                        // 이름 검사를 한 후에 init message를 보냄
+                        sListeners.get(0).checkUserName(socket);
+                        return true;
+                    }
+                default:
+                    return false;
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Failed to connect chat server", "Error", JOptionPane.ERROR_MESSAGE);

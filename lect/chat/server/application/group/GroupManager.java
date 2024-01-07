@@ -71,4 +71,8 @@ public class GroupManager {
     public List<User> findAllMessageHandler(String name) {
         return groupRepo.findAllMessageHandler(name);
     }
+
+    public int countByChatRoom() {
+        return groupRepo.getSize();
+    }
 }

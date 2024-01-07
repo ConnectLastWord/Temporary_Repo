@@ -86,7 +86,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         c = new GridBagConstraints();
         titleLabel = new JLabel("List of Room", JLabel.CENTER);
         c.gridy = 0;
-        c.gridx = 5;
+        c.gridx = 4;
         c.insets = new Insets(2, 2, 2, 2);
         add(titleLabel, c);
 
@@ -223,7 +223,13 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 statusBar.setUserName("");
                 connector.disConnect();
                 connectDisconnect.toButton(CommandButton.CMD_CONNECT);
-                room = null;
+                // 컴포넌트 비활성화
+                chatTextField.setEnabled(false);    // 입력창
+                chatDispArea.setEnabled(false); // 채팅 화면
+                userList.setEnabled(false); // 사용자 목록
+                room = null;    // 채팅방 목록
+
+
             }
         } else {
             // 챗방 클리어 버튼일때
@@ -280,6 +286,8 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         userList.removeAllUsers();
         // 채팅창 초기화
         chatDispArea.initDisplay();
+        // 채팅방 초기화
+        roomList.removeAllChatRoom();
         connectDisconnect.toButton(CommandButton.CMD_CONNECT);
     }
 
@@ -302,6 +310,11 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         // 이름 검사
         writer.println(createMessage(ChatCommandUtil.CHECK_USER_NAME,
                 String.format("%s|%s", connector.getName(), connector.getId())));
+    }
+
+    public void loginByAnoymous(Socket s) {
+        writer.println(createMessage(ChatCommandUtil.LOGIN_ANOYMOUS,
+                "익명 사용자"));
     }
 
     private void displayUserList(String users) {

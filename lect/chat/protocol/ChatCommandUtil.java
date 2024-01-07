@@ -1,7 +1,7 @@
 package lect.chat.protocol;
 
 public class ChatCommandUtil {
-    public static final char CREATE_ROOM ='a';
+    public static final char CREATE_ROOM = 'a';
     public static final char NORMAL = 'b';// 채팅
     public static final char USER_LIST = 'd';
     public static final char ENTER_ROOM = 'e';
@@ -12,6 +12,7 @@ public class ChatCommandUtil {
     public static final char EXIT_PROGRAM = 'x';
 
     public static final char REMOVE_ROOM = 'g';
+    public static final char LOGIN_ANOYMOUS = 'y';
 
     private ChatCommandUtil() {
     }
