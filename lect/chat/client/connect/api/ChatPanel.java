@@ -161,17 +161,17 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         msg = msg.replaceFirst("\\[{1}[a-z]\\]{1}", "");
         switch (command) {
             case ChatCommandUtil.NORMAL:
-            case ChatCommandUtil.ENTER_ROOM:
-            case ChatCommandUtil.EXIT_ROOM:
+            case ChatCommandUtil.ENTER_ROOM_MESSAGE:
+            case ChatCommandUtil.EXIT_ROOM_MESSAGE:
                 chatDispArea.append(msg + "\n", command);
                 break;
             case ChatCommandUtil.USER_LIST:
                 displayUserList(msg);
                 break;
-            case ChatCommandUtil.ROOM_LIST:
+            case ChatCommandUtil.ENTER_ROOM:
                 displayRoomList(msg);
                 break;
-            case ChatCommandUtil.CHECK_USER_NAME:
+            case ChatCommandUtil.LOGIN:
                 if (msg.equals("false")) {
                     JOptionPane.showMessageDialog(this, "이미 존재하는 닉네임", "Login Fail",
                             JOptionPane.WARNING_MESSAGE);
@@ -218,7 +218,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 chatTextField.setEnabled(false);
 
             } else {// 신호가 Disconnect 일때
-                sendMessage(ChatCommandUtil.EXIT_PROGRAM, connector.getName());
+                sendMessage(ChatCommandUtil.LOGOUT, connector.getName());
                 StatusBar statusBar = StatusBar.getStatusBar();
                 statusBar.setUserName("");
                 connector.disConnect();
@@ -243,7 +243,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                                 JOptionPane.WARNING_MESSAGE);
                         return;
                     }
-                    sendMessage(ChatCommandUtil.ROOM_LIST, room.getName());
+                    sendMessage(ChatCommandUtil.ENTER_ROOM, room.getName());
                     // 컴포넌트 활성화
                     userList.setEnabled(true);
                     chatDispArea.setEnabled(true);
@@ -308,7 +308,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
 
     public void checkUserName(Socket s) {
         // 이름 검사
-        writer.println(createMessage(ChatCommandUtil.CHECK_USER_NAME,
+        writer.println(createMessage(ChatCommandUtil.LOGIN,
                 String.format("%s|%s", connector.getName(), connector.getId())));
     }
 

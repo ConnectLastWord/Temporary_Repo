@@ -1,32 +1,29 @@
 package lect.chat.server.application.messageHandler;
 
 import lect.chat.protocol.ChatCommandUtil;
-import lect.chat.server.application.group.GroupManager;
+import lect.chat.server.application.group.GroupController;
 import lect.chat.server.application.user.DefaultUser;
 import lect.chat.server.application.user.User;
-import lect.chat.server.application.user.UserManager;
+import lect.chat.server.application.user.UserController;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.List;
 
 // 사용자 메시지를 전달하기 위한 구현체 = 하나의 클라이언트와 통신하기 위한 객체, 스레드
 public class MessageHandlerImpl implements Runnable, MessageHandler {
     private User user;
-    // 모든 사용자 관리자
-    private UserManager mM;
-    // 채팅방 관리자
-    private GroupManager gM;
+    private GroupController gC;
+    private UserController uC;
 
     public MessageHandlerImpl(Socket s) throws IOException {
         user = new DefaultUser(s,
                 new BufferedReader(new InputStreamReader(s.getInputStream())),
                 new PrintWriter(s.getOutputStream(), true), s.getInetAddress().getHostAddress());
-        mM = UserManager.getInstance();
-        gM = GroupManager.getInstance();
+        gC = new GroupController();
+        uC = new UserController();
     }
 
     public void run() {
@@ -37,43 +34,41 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
                 if (msg == null) {
                     break;
                 }
-                processMessage(msg);
+                handleRequest(msg);
                 System.out.println("lineRead: " + msg);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            // 채팅방 입장 전 로그아웃 시, 퇴장 메시지 브로드 캐스트 필터
-            if (user.getChatRoomName() != null) {
-                // 삭제할 채팅방 정보 조회
-                List<User> targetList = gM.removeUserByChatRoom(user.getChatRoomName(), user);
-                // 퇴장 메시지 브로드 캐스트
-                broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM, user.getChatName() + " has just left [" + user.getChatRoomName() + "] room"));
-            }
+            handleRequest(String.valueOf(ChatCommandUtil.LOGOUT));
             close();
         }
         System.out.println("Terminating ClientHandler");
     }
 
-    public String createMessage(char protocol, String msg) {
-        StringBuilder msgBuilder = new StringBuilder();
-        msgBuilder.delete(0, msgBuilder.length());
-        msgBuilder.append("[");
-        msgBuilder.append(protocol);
-        msgBuilder.append("]");
-        msgBuilder.append(msg);
-        return msgBuilder.toString();
+    @Override
+    public String getId() {
+        return null;
     }
 
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public String getRoomName() {
+        return null;
+    }
+
+    @Override
+    public String getFrom() {
+        return null;
+    }
+
+    @Override
     public void sendMessage(String msg) {
-        user.println(msg);
-    }
 
-    // 브로드 캐스트
-    private <T extends User> void broadcastMessage(List<T> targetList, String msg) {
-        for (User user : targetList) {
-            user.println(msg);
-        }
     }
 
     public String getMessage() throws IOException {
@@ -86,83 +81,44 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
 
     public void close(String userName) {
         user.close();
-        mM.removeUser(user);
+        handleRequest(String.valueOf(ChatCommandUtil.LOGOUT));
     }
 
-    public String getId() {
-        return user.getId();//socket.getRemoteSocketAddress().toString();
+    @Override
+    public String createMessage(char protocol, String s) {
+        return null;
     }
 
-    public String getFrom() {
-        return user.getHost();
-    }
-
-    public String getName() {
-        return user.getChatName();
-    }
-
-    public String getRoomName() {
-        return user.getChatRoomName();
-    }
-
-    public void processMessage(String msg) {
+    // 핸들러는 해당 요청이 어느 컨트롤러로 가야하는 지?
+    public void handleRequest(String msg) {
         char command = ChatCommandUtil.getCommand(msg);// 첫번째 글자 떼옴
         //msg = [b]채팅방- 2|massage
         msg = msg.replaceFirst("\\[{1}[a-z]\\]{1}", "");// 첫번쨰 글자 없앰
         switch (command) {
-            case ChatCommandUtil.CHECK_USER_NAME:
-                String[] nameWithId = msg.split("\\|");
-                user.setChatName(nameWithId[0]);
-//                chatName = nameWithId[0];
-                user.setId(nameWithId[1]);
-//                id = nameWithId[1];
-                // user 이름이 이미 존재하는 경우
-                if (mM.isContains(user.getChatName())) {
-                    sendMessage(createMessage(ChatCommandUtil.CHECK_USER_NAME, "false"));
-                } else {
-                    sendMessage(createMessage(ChatCommandUtil.CHECK_USER_NAME, user.getChatName()));
-                    mM.addUser(user);
-                    broadcastMessage(mM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_LIST, gM.getRoomsToString()));
-                }
+            // 로그인
+            case ChatCommandUtil.LOGIN:
+                uC.handleController(user, command, msg);
                 break;
-            // 채팅방 접속
-            case ChatCommandUtil.ROOM_LIST:
-                if (user.getChatRoomName() != null) {
-                    // 삭제할 채팅방 정보 조회
-                    List<User> targetList = gM.removeUserByChatRoom(user.getChatRoomName(), user);
-                    // 퇴장 메시지 브로드 캐스트
-                    broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM, user.getChatName() + " has just left [" + user.getChatRoomName() + "] room"));
-                    // 유저 리스트 브로드 캐스트
-                    broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(user.getChatRoomName())));
-                }
-                user.setChatRoomName(msg);
-                // 생성할 채팅방 정보 조회
-                List<User> targetList = gM.addUserByChatRoom(user.getChatRoomName(), user);
-                // 입장 메시지 브로드 캐스트
-                broadcastMessage(targetList, createMessage(ChatCommandUtil.ENTER_ROOM, user.getChatName() + " has entered [" + user.getChatRoomName() + "] room"));
-                // 유저 리스트 브로드 캐스트
-                broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(user.getChatRoomName())));
-                break;
-            // 채팅방 생성
-            case ChatCommandUtil.CREATE_ROOM:
-                if (gM.isContains(msg)) {
-                    sendMessage(createMessage(ChatCommandUtil.CREATE_ROOM, "이미 존재하는 채팅방"));
-                } else {
-                    gM.addChatRoom(msg);
-                    broadcastMessage(mM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_LIST, gM.getRoomsToString()));
-                }
+            //  로그아웃
+            case ChatCommandUtil.LOGOUT:
+                uC.handleController(user, command, msg);
                 break;
             // 채팅방 메시지
             case ChatCommandUtil.NORMAL:
-                String[] msgSplit = msg.split("\\|");
-                String sendMsg = msgSplit[1];
-                targetList = gM.findAllMessageHandler(user.getChatRoomName());
-                broadcastMessage(targetList, createMessage(ChatCommandUtil.NORMAL, String.format("%s: %s", user.getChatName(), sendMsg)));
+                gC.handleController(user, command, msg);
                 break;
+            // 채팅방 생성
+            case ChatCommandUtil.CREATE_ROOM:
+                gC.handleController(user, command, msg);
+                break;
+            // 채팅방 삭제
             case ChatCommandUtil.REMOVE_ROOM:
-                gM.removeChatRoom(user.getChatRoomName());
-            case ChatCommandUtil.EXIT_PROGRAM:
-                mM.removeUser(user);
+                gC.handleController(user, command, msg);
+                break;
+            // 채팅방 접속
+            case ChatCommandUtil.ENTER_ROOM:
+                gC.handleController(user, command, msg);
+                break;
             default:
                 System.out.printf("ChatCommand %c \n", command);
                 break;

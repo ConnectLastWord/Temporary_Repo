@@ -42,8 +42,8 @@ public class ChatTextPane extends JTextPane implements FileProgressListener {
     public void append(String msg, char command) {
         AttributeSet attrset;
         switch (command) {
-            case ChatCommandUtil.ENTER_ROOM:
-            case ChatCommandUtil.EXIT_ROOM:
+            case ChatCommandUtil.ENTER_ROOM_MESSAGE:
+            case ChatCommandUtil.EXIT_ROOM_MESSAGE:
                 attrset = enterExitAttrSet;
                 break;
             case ChatCommandUtil.NORMAL:
