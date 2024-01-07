@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Stack;
 
-public class AnonymousUser extends User {
+public class AnonymousUserMessenger extends UserMessenger {
 //    static long idx = 1;
     private final static Stack<Integer> idxManager = new Stack<>();
     static{
@@ -16,7 +16,7 @@ public class AnonymousUser extends User {
             idxManager.push(idx);
     }
 
-    public AnonymousUser(Socket socket, String userId, BufferedReader br, PrintWriter pw, String host) {
+    public AnonymousUserMessenger(Socket socket, String userId, BufferedReader br, PrintWriter pw, String host) {
         super(socket, userId, br, pw, host);
         setChatName(String.format("Anonymous %d", idxManager.pop()));
     }

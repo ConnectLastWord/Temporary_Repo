@@ -5,46 +5,46 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
 
-public class UserManager {
-    private static UserManager instance;
+public class UserMessengerManager {
+    private static UserMessengerManager instance;
     private static UserRepo userRepo;
-    private static UserFactory userFactory;
+    private static UserMessengerFactory userMessengerFactory;
 
-    private UserManager() {
+    private UserMessengerManager() {
         userRepo = UserRepo.getInstance();
-        userFactory = UserFactory.getInstance();
+        userMessengerFactory = UserMessengerFactory.getInstance();
     }
 
     // 싱글톤 패턴 구현
-    public static UserManager getInstance() {
+    public static UserMessengerManager getInstance() {
         if (instance == null) {
-            instance = new UserManager();
+            instance = new UserMessengerManager();
         }
         return instance;
     }
 
     // 사용자 추가
     public String addUser(char protocol, Socket socket, String chatName, String chatId, BufferedReader br, PrintWriter pw, String host) {
-        User user = userFactory.getUser(protocol, socket, chatName, chatId, br, pw, host);
-        userRepo.add(user);
+        UserMessenger userMessenger = userMessengerFactory.getUser(protocol, socket, chatName, chatId, br, pw, host);
+        userRepo.add(userMessenger);
 
-        return user.getChatName();
+        return userMessenger.getChatName();
     }
 
     // 사용자 삭제
-    public void removeUser(User user) {
-        userRepo.remove(user);
+    public void removeUser(UserMessenger userMessenger) {
+        userRepo.remove(userMessenger);
     }
     // 포함 여부
     public boolean isContains(String userName) {
         return userRepo.isContains(userName);
     }
 
-    public List<User> findAllMessageHandler() {
+    public List<UserMessenger> findAllMessageHandler() {
         return userRepo.getValues();
     }
 
-    public User getUser(String chatName) {
+    public UserMessenger getUserMessenger(String chatName) {
         return userRepo.getValue(chatName);
     }
 
@@ -53,7 +53,7 @@ public class UserManager {
     }
 
     public String getChatRoomName(String chatName) {
-        User user = userRepo.getValue(chatName);
-        return user.getChatRoomName();
+        UserMessenger userMessenger = userRepo.getValue(chatName);
+        return userMessenger.getChatRoomName();
     }
 }

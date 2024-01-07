@@ -16,15 +16,15 @@ public class Initializer implements Runnable{
     public Initializer(Socket socket) throws IOException {
         socketManager = new SocketManager();
         socketManager.setSocket(socket);
-
-        // login 전략 초기화
-        loginMessenger = LoginMessenger.getInstance();
-        loginMessenger.init(socket, new BufferedReader(new InputStreamReader(socket.getInputStream())),
-                new PrintWriter(socket.getOutputStream(), true));
     }
     @Override
     public void run() {
-        MessageHandler messageHandler = new MessageHandlerImpl(socketManager);
+        MessageHandler messageHandler = null;
+        try {
+            messageHandler = new MessageHandlerImpl(socketManager);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         messageHandler.run();
     }
 }

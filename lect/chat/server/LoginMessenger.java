@@ -6,15 +6,11 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class LoginMessenger extends Messenger{
+    SocketManager socketManager;
 
-    private static LoginMessenger instance;
-    private LoginMessenger() {
-    }
-
-    public static LoginMessenger getInstance() {
-        if(instance == null)
-            instance = new LoginMessenger();
-        return instance;
+    public LoginMessenger(BufferedReader br, PrintWriter pw) {
+        this.br = br;
+        this.pw = pw;
     }
     public String readLine() throws IOException {
         return br.readLine();
@@ -22,15 +18,5 @@ public class LoginMessenger extends Messenger{
 
     public void println(String msg) {
         pw.println(msg);
-    }
-
-    public void init(Socket socket, BufferedReader br, PrintWriter pw) {
-        this.socket = socket;
-        this.br = br;
-        this.pw = pw;
-    }
-
-    public Socket getSocket() {
-        return socket;
     }
 }

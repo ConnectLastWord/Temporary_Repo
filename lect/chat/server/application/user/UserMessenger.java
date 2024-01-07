@@ -7,13 +7,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public abstract class User extends Messenger {
+public abstract class UserMessenger extends Messenger {
     private String chatName;
     private String id;
     private String host;
     private String chatRoomName;
 
-    public User(Socket socket, String userId, BufferedReader br, PrintWriter pw, String host) {
+    public UserMessenger(Socket socket, String userId, BufferedReader br, PrintWriter pw, String host) {
         this.id = userId;
         this.socket = socket;
         this.br = br;
