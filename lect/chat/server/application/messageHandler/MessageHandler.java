@@ -1,5 +1,7 @@
 package lect.chat.server.application.messageHandler;
 
+import lect.chat.server.application.socket.SocketManager;
+
 import java.io.IOException;
 
 // ClientHandler가 구현체
@@ -12,7 +14,9 @@ public interface MessageHandler {
 
     public String getFrom();
 
-    public void sendMessage(String msg);
+    public void run();
+
+    public void sendMessage(String chatName, String msg);
 
     public String getMessage() throws IOException;
 

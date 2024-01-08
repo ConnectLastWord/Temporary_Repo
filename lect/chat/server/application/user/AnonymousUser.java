@@ -1,12 +1,10 @@
-package lect.chat.server.application.messenger.user;
+package lect.chat.server.application.user;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.Stack;
 
-public class AnonymousUserMessenger extends UserMessenger {
+public class AnonymousUser extends User {
 //    static long idx = 1;
     private final static Stack<Integer> idxManager = new Stack<>();
     static{
@@ -16,7 +14,7 @@ public class AnonymousUserMessenger extends UserMessenger {
             idxManager.push(idx);
     }
 
-    public AnonymousUserMessenger(String userId, BufferedReader br, PrintWriter pw, String host) {
+    public AnonymousUser(String userId, BufferedReader br, PrintWriter pw, String host) {
         super(userId, br, pw, host);
         setChatName(String.format("Anonymous %d", idxManager.pop()));
     }
