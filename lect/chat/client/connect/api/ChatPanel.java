@@ -1,21 +1,32 @@
 package lect.chat.client.connect.api;
 
-import lect.chat.client.components.*;
-import lect.chat.client.connect.ChatConnector;
-import lect.chat.client.connect.ChatSocketListener;
-import lect.chat.client.connect.service.MessageReceiver;
-import lect.chat.client.model.ChatRoom;
-import lect.chat.client.model.ChatUser;
-import lect.chat.protocol.ChatCommandUtil;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import lect.chat.client.components.ChatRoomList;
+import lect.chat.client.components.ChatRoomSizeList;
+import lect.chat.client.components.ChatTextPane;
+import lect.chat.client.components.ChatUserList;
+import lect.chat.client.components.CommandButton;
+import lect.chat.client.components.StatusBar;
+import lect.chat.client.connect.ChatConnector;
+import lect.chat.client.connect.ChatSocketListener;
+import lect.chat.client.connect.service.MessageReceiver;
+import lect.chat.client.model.ChatRoom;
+import lect.chat.client.model.ChatUser;
+import lect.chat.protocol.ChatCommandUtil;
 
 // 컴포넌트 기반 신호 리스너
 @SuppressWarnings("serial")
@@ -24,6 +35,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
     ChatTextPane chatDispArea;
     ChatUserList userList;
     ChatRoomList roomList;
+    ChatRoomSizeList roomSizeList;
     ChatRoom room;
     CommandButton connectDisconnect;
     JButton clearChat;
@@ -52,6 +64,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         chatDispArea = new ChatTextPane();//new ChatTextArea();
         userList = new ChatUserList();
         roomList = new ChatRoomList();
+        roomSizeList = new ChatRoomSizeList();
 
         connectDisconnect = new CommandButton();
         clearChat = new JButton("ClearChat");
@@ -67,6 +80,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         makeRoom.setEnabled(false);
         userList.setEnabled(false);
         roomList.setEnabled(false);
+        roomSizeList.setEnabled(false);
 
         GridBagConstraints c = new GridBagConstraints();
         JLabel titleLabel = new JLabel("Message Received", JLabel.CENTER);
@@ -87,6 +101,13 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         titleLabel = new JLabel("List of Room", JLabel.CENTER);
         c.gridy = 0;
         c.gridx = 5;
+        c.insets = new Insets(2, 2, 2, 2);
+        add(titleLabel, c);
+
+        c = new GridBagConstraints();
+        titleLabel = new JLabel("Size", JLabel.CENTER);
+        c.gridy = 0;
+        c.gridx = 7;
         c.insets = new Insets(2, 2, 2, 2);
         add(titleLabel, c);
 
@@ -121,6 +142,17 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         c.anchor = GridBagConstraints.LINE_START;
         c.insets = new Insets(1, 2, 0, 2);
         scrollPane = new JScrollPane(roomList);
+        add(scrollPane, c);
+
+        c = new GridBagConstraints();
+        c.gridy = 1;
+        c.gridx = 6;
+        c.gridwidth = 2;
+        c.weightx = 0.1;
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.LINE_START;
+        c.insets = new Insets(1, 2, 0, 2);
+        scrollPane = new JScrollPane(roomSizeList);
         add(scrollPane, c);
 
         c = new GridBagConstraints();
@@ -170,6 +202,9 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 break;
             case ChatCommandUtil.ROOM_LIST:
                 displayRoomList(msg);
+                break;
+            case ChatCommandUtil.ROOM_SIZE:
+                displayRoomSizeList(msg);
                 break;
             case ChatCommandUtil.CHECK_USER_NAME:
                 if (msg.equals("false")) {
@@ -325,6 +360,11 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
             list.add(new ChatRoom(strRoom));
         }
         roomList.addNewRooms(list);
+    }
+
+    private void displayRoomSizeList(String Sizes) {
+        String[] strRooms = Sizes.split("\\|");
+        roomSizeList.add(strRooms);
     }
 
     private void sendMessage(char command, String msg) {

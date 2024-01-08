@@ -1,17 +1,16 @@
 package lect.chat.server.application.messageHandler;
 
-import lect.chat.protocol.ChatCommandUtil;
-import lect.chat.server.application.group.GroupManager;
-import lect.chat.server.application.user.DefaultUser;
-import lect.chat.server.application.user.User;
-import lect.chat.server.application.user.UserManager;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
+import lect.chat.protocol.ChatCommandUtil;
+import lect.chat.server.application.group.GroupManager;
+import lect.chat.server.application.user.DefaultUser;
+import lect.chat.server.application.user.User;
+import lect.chat.server.application.user.UserManager;
 
 // 사용자 메시지를 전달하기 위한 구현체 = 하나의 클라이언트와 통신하기 위한 객체, 스레드
 public class MessageHandlerImpl implements Runnable, MessageHandler {
@@ -43,13 +42,16 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            // 삭제할 채팅방 정보 조회
-            List<User> targetList = gM.removeUserByChatRoom(user.getChatRoomName(), user);
-            // 퇴장 메시지 브로드 캐스트
-            broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM, user.getChatName() + " has just left [" + user.getChatRoomName() + "] room"));
-            close();
+            if (gM.getRoomsSize() > 0) {
+                // 삭제할 채팅방 정보 조회
+                List<User> targetList = gM.removeUserByChatRoom(user.getChatRoomName(), user);
+                // 퇴장 메시지 브로드 캐스트
+                broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM,
+                        user.getChatName() + " has just left [" + user.getChatRoomName() + "] room"));
+                close();
+            }
+            System.out.println("Terminating ClientHandler");
         }
-        System.out.println("Terminating ClientHandler");
     }
 
     public String createMessage(char protocol, String msg) {
@@ -138,6 +140,7 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
                 broadcastMessage(targetList, createMessage(ChatCommandUtil.ENTER_ROOM, user.getChatName() + " has entered [" + user.getChatRoomName() + "] room"));
                 // 유저 리스트 브로드 캐스트
                 broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(user.getChatRoomName())));
+                broadcastMessage(mM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_SIZE, gM.getGroupSize()));
                 break;
             // 채팅방 생성
             case ChatCommandUtil.CREATE_ROOM:
@@ -146,6 +149,7 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
                 } else {
                     gM.addChatRoom(msg);
                     broadcastMessage(mM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_LIST, gM.getRoomsToString()));
+                    broadcastMessage(mM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_SIZE, gM.getGroupSize()));
                 }
                 break;
             // 채팅방 메시지

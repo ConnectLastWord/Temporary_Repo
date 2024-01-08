@@ -1,9 +1,8 @@
 package lect.chat.server.application.group;
 
-import lect.chat.server.application.user.User;
-
 import java.util.ArrayList;
 import java.util.List;
+import lect.chat.server.application.user.User;
 
 // 채팅방 1개
 public class Group {
@@ -54,5 +53,9 @@ public class Group {
             }
         }
         return userList.toString();
+    }
+
+    public int getSize(){
+        return clientList.size();
     }
 }

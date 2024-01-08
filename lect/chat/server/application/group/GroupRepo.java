@@ -1,11 +1,11 @@
 package lect.chat.server.application.group;
 
-import lect.chat.server.application.user.User;
-
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import lect.chat.server.application.user.User;
 
 public class GroupRepo {
     private static GroupRepo instance;
@@ -53,6 +53,13 @@ public class GroupRepo {
         return roomsList.keySet();
     }
 
+    public int[] getValueSizeSet() {
+        if (roomsList != null) {
+            return roomsList.values().stream().mapToInt(it-> it.getSize()).toArray();
+        }
+        return null;
+    }
+
 
     // 채팅방 개수 조회
     public int getSize() {
@@ -64,5 +71,13 @@ public class GroupRepo {
         String[] names = getKeySet().toArray(new String[0]);
         StringBuilder rooms = new StringBuilder(String.join("|", names));
         return rooms.toString();
+    }
+
+    public String getRoomSize() {
+        if (getValueSizeSet().length > 0) {
+            String[] roomSizeArray = Arrays.stream(getValueSizeSet()).mapToObj(String::valueOf).toArray(String[]::new);
+            return String.join("|", roomSizeArray);
+        }
+        return null;
     }
 }

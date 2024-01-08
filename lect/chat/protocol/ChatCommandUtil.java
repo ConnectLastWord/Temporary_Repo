@@ -13,6 +13,8 @@ public class ChatCommandUtil {
 
     public static final char REMOVE_ROOM = 'g';
 
+    public static final char ROOM_SIZE='s';
+
     private ChatCommandUtil() {
     }
 

@@ -1,8 +1,7 @@
 package lect.chat.server.application.group;
 
-import lect.chat.server.application.user.User;
-
 import java.util.List;
+import lect.chat.server.application.user.User;
 
 // GroupManager roomList객체만 관리 / MessageHandler는 관리 x
 public class GroupManager {
@@ -70,5 +69,13 @@ public class GroupManager {
 
     public List<User> findAllMessageHandler(String name) {
         return groupRepo.findAllMessageHandler(name);
+    }
+
+    public String getGroupSize(){
+        return groupRepo.getRoomSize();
+    }
+
+    public int getRoomsSize(){
+        return groupRepo.getSize();
     }
 }
