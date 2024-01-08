@@ -1,10 +1,10 @@
-package lect.chat.server;
+package lect.chat.server.application.messenger;
 
 import java.io.IOException;
 
 public class BroadcastMessenger extends Messenger{
     @Override
-    public void println(Object... objects) {
+    public void println(String msg) {
 
     }
 

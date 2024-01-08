@@ -1,11 +1,10 @@
-package lect.chat.server;
+package lect.chat.server.application.messenger;
+
+import lect.chat.server.application.socket.SocketManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.Objects;
 
 public class LoginMessenger extends Messenger{
     public LoginMessenger(BufferedReader br, PrintWriter pw) {
@@ -14,12 +13,14 @@ public class LoginMessenger extends Messenger{
     }
 
     @Override
+    public void println(String msg) {
+        pw.println(msg);
+    }
+
+    @Override
     public String readLine() throws IOException {
         return br.readLine();
     }
 
-    @Override
-    public void println(Object... objects) {
-        pw.println(objects[0]);
-    }
+
 }

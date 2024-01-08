@@ -1,4 +1,4 @@
-package lect.chat.server.application.user;
+package lect.chat.server.application.messenger.user;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class UserRepo {
     private static UserRepo instance;
-    private static Map<String, User> clientList;
+    private static Map<String, UserMessenger> clientList;
 
     private UserRepo() {
         clientList = new HashMap<>();
@@ -21,21 +21,21 @@ public class UserRepo {
     }
 
     // 사용자 추가
-    public void add(User user) {
-        clientList.put(user.getChatName(), user);
+    public void add(UserMessenger userMessenger) {
+        clientList.put(userMessenger.getChatName(), userMessenger);
     }
 
     // 사용자 삭제
-    public void remove(User user) {
-        clientList.remove(user.getChatName());
+    public void remove(UserMessenger userMessenger) {
+        clientList.remove(userMessenger.getChatName());
     }
 
     // 모든 사용자 조회
-    public List<User> getValues() {
+    public List<UserMessenger> getValues() {
         return clientList.values().stream().toList();
     }
 
-    public User getValue(String chatName) {
+    public UserMessenger getValue(String chatName) {
         return clientList.get(chatName);
     }
 

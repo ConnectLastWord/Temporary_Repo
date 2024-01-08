@@ -1,4 +1,4 @@
-package lect.chat.server;
+package lect.chat.server.application.socket;
 
 import java.net.Socket;
 

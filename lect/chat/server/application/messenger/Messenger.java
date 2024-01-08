@@ -1,4 +1,4 @@
-package lect.chat.server;
+package lect.chat.server.application.messenger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +10,6 @@ public abstract class Messenger {
     protected PrintWriter pw;
 
 //    public abstract void println(String msg);
-    public abstract void println(Object... objects);
+    public abstract void println(String msg);
     public abstract String readLine() throws IOException;
 }
