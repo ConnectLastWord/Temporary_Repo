@@ -1,12 +1,9 @@
 package lect.chat.server.application.messageHandler;
 
-import lect.chat.server.application.messenger.BroadcastMessenger;
-import lect.chat.server.application.messenger.LoginMessenger;
-import lect.chat.server.application.messenger.Messenger;
-import lect.chat.server.application.socket.SocketManager;
+import lect.chat.server.ConnectManager;
 import lect.chat.server.application.group.GroupManager;
-import lect.chat.server.application.messenger.user.UserMessenger;
-import lect.chat.server.application.messenger.user.UserMessengerManager;
+import lect.chat.server.application.user.User;
+import lect.chat.server.application.user.UserManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,47 +14,35 @@ import java.util.List;
 
 import static lect.chat.protocol.ChatCommandUtil.*;
 
-// 사용자 메시지를 전달하기 위한 구현체 = 하나의 클라이언트와 통신하기 위한 객체
-public class MessageHandlerImpl implements MessageHandler {
+// 사용자 메시지를 전달하기 위한 구현체 = 하나의 클라이언트와 통신하기 위한 객체, 스레드
+public class MessageHandlerImpl implements Runnable, MessageHandler {
 //    private User user;
     String chatName;
     // 모든 사용자 관리자
-    private final UserMessengerManager userMessengerManager;
+    private UserManager userManager;
     // 채팅방 관리자
-    private final GroupManager groupManger;
-    // 소켓 관리자
-    private final SocketManager socketManager;
-    // 메시지 처리 전략
-    Messenger strategy;
-    // login 전략
-    LoginMessenger loginMessenger;
-    // user 전략
-    UserMessenger userMessenger;
-    // broadcast 전략
-    BroadcastMessenger broadcastMessenger;
-    public MessageHandlerImpl(SocketManager socketManager) throws IOException {
-        userMessengerManager = UserMessengerManager.getInstance();
+    private GroupManager groupManger;
+    // 로그인 관리자
+    private ConnectManager connectManager;
+    public MessageHandlerImpl(Socket s) throws IOException {
+        userManager = UserManager.getInstance();
         groupManger = GroupManager.getInstance();
-        this.socketManager = socketManager;
-        // login 전략 초기화
-        loginMessenger = new LoginMessenger(
-                new BufferedReader(new InputStreamReader(socketManager.getSocket().getInputStream())),
-                new PrintWriter(socketManager.getSocket().getOutputStream(), true));
+        connectManager = ConnectManager.getInstance();
+        connectManager.init(s, new BufferedReader(new InputStreamReader(s.getInputStream())),
+                new PrintWriter(s.getOutputStream(), true));
+        System.out.println("message handler 생성");
     }
 
     public void run() {
         String msg;
         try {
-            setStrategy(loginMessenger);
-            msg = getMessage();
+            msg = getLoginMessage();
             processMessage(msg);
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            UserMessenger userMessenger = userMessengerManager.getUserMessenger(chatName);
             while (true) {
-                setStrategy(userMessenger);
                 msg = getMessage();
                 if (msg == null) {
                     break;
@@ -67,11 +52,12 @@ public class MessageHandlerImpl implements MessageHandler {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            User user = userManager.getUser(chatName);
             // 삭제할 채팅방 정보 조회지
-            List<UserMessenger> targetList = groupManger.removeUserByChatRoom(userMessenger.getChatRoomName(), userMessenger);
+            List<User> targetList = groupManger.removeUserByChatRoom(user.getChatRoomName(), user);
             // 퇴장 메시지 브로드 캐스트
-            broadcastMessage(targetList, createMessage(EXIT_ROOM, userMessenger.getChatName() + " has just left [" + userMessenger.getChatRoomName() + "] room"));
-            close(chatName);
+            broadcastMessage(targetList, createMessage(EXIT_ROOM, user.getChatName() + " has just left [" + user.getChatRoomName() + "] room"));
+            close();
         }
         System.out.println("Terminating ClientHandler");
     }
@@ -86,56 +72,64 @@ public class MessageHandlerImpl implements MessageHandler {
         return msgBuilder.toString();
     }
 
-    private void setStrategy(Messenger strategy) {
-        this.strategy = strategy;
-    }
-//    private void setStrategy(Messenger strategy, List<T> targetList) {
-//        this.strategy = strategy;
-//    }
-
-    public String getMessage() throws IOException {
-        return strategy.readLine();
-    }
-
     public void sendMessage(String msg) {
-        strategy.println(msg);
+        User user = userManager.getUser(chatName);
+        user.println(msg);
     }
 
     // 브로드 캐스트
-    private <T extends UserMessenger> void broadcastMessage(List<T> targetList, String msg) {
-        for (UserMessenger userMessenger : targetList) {
-            userMessenger.println(msg);
+    private <T extends User> void broadcastMessage(List<T> targetList, String msg) {
+        for (User user : targetList) {
+            user.println(msg);
         }
     }
 
+    public String getLoginMessage() throws IOException {
+        return connectManager.readLine();
+    }
+
+    public void sendLoginMessage(String msg) {
+        connectManager.println(msg);
+    }
+
+    public String getMessage() throws IOException {
+        User user = userManager.getUser(chatName);
+        return user.readLine();
+    }
+
+    public void close() {
+        User user = userManager.getUser(chatName);
+        user.close();
+    }
+
     public void close(String chatName) {
-        UserMessenger userMessenger = userMessengerManager.getUserMessenger(chatName);
-        userMessenger.close();
-        userMessengerManager.removeUser(userMessenger);
+        User user = userManager.getUser(chatName);
+        user.close();
+        userManager.removeUser(user);
     }
 
     public String getId() {
-        UserMessenger userMessenger = userMessengerManager.getUserMessenger(chatName);
-        return userMessenger.getId(); //socket.getRemoteSocketAddress().toString();
+        User user = userManager.getUser(chatName);
+        return user.getId();//socket.getRemoteSocketAddress().toString();
     }
 
     public String getFrom() {
-        UserMessenger userMessenger = userMessengerManager.getUserMessenger(chatName);
-        return userMessenger.getHost();
+        User user = userManager.getUser(chatName);
+        return user.getHost();
     }
 
     public String getName() {
-        UserMessenger userMessenger = userMessengerManager.getUserMessenger(chatName);
-        return userMessenger.getChatName();
+        User user = userManager.getUser(chatName);
+        return user.getChatName();
     }
 
     public String getRoomName() {
-        UserMessenger userMessenger = userMessengerManager.getUserMessenger(chatName);
-        return userMessenger.getChatRoomName();
+        User user = userManager.getUser(chatName);
+        return user.getChatRoomName();
     }
 
     public void processMessage(String msg) throws IOException {
-        UserMessenger userMessenger;
+        User user;
         char command = getCommand(msg);// 첫번째 글자 떼옴
         //msg = [b]채팅방- 2|massage
         msg = msg.replaceFirst("\\[{1}[a-z]\\]{1}", "");// 첫번쨰 글자 없앰
@@ -143,70 +137,61 @@ public class MessageHandlerImpl implements MessageHandler {
             // 유저 이름 유효성 검사
             case CHECK_USER_NAME:
                 String[] nameWithId = msg.split("\\|");
-                setStrategy(loginMessenger);
-                if(userMessengerManager.isContains(chatName)) {
+                if(userManager.isContains(chatName)) {
                     System.out.println("fail");
-                    sendMessage(createMessage(CHECK_USER_NAME, "false"));
+                    sendLoginMessage(createMessage(CHECK_USER_NAME, "false"));
                 } else {
                     // user가 존재하지 않는 경우에는 로그인
-                    sendMessage(createMessage(CHECK_USER_NAME, userMessengerManager.getChatName(chatName)));
-                    sendMessage(createMessage(ROOM_LIST, groupManger.getRoomsToString()));
-
-                    Socket socket = socketManager.getSocket();
-                    chatName = userMessengerManager.addUser(CREATE_DEFAULT_USER,
-                            nameWithId[0],
-                            nameWithId[1],
-                            new BufferedReader(new InputStreamReader(socket.getInputStream())),
+                    sendLoginMessage(createMessage(CHECK_USER_NAME, userManager.getChatName(chatName)));
+                    sendLoginMessage(createMessage(ROOM_LIST, groupManger.getRoomsToString()));
+                    Socket socket = connectManager.getSocket();
+                    chatName = userManager.addUser(CREATE_DEFAULT_USER, socket, nameWithId[0], nameWithId[1], new BufferedReader(new InputStreamReader(socket.getInputStream())),
                             new PrintWriter(socket.getOutputStream(), true), socket.getInetAddress().getHostAddress());
-                    userMessenger = userMessengerManager.getUserMessenger(chatName);
-                    setStrategy(userMessenger);
-                    sendMessage(createMessage(CHECK_USER_NAME, userMessengerManager.getChatName(chatName)));
+                    sendMessage(createMessage(CHECK_USER_NAME, userManager.getChatName(chatName)));
                 }
                 break;
             // 채팅방 접속
             case ROOM_LIST:
-                userMessenger = userMessengerManager.getUserMessenger(chatName);
-                if(userMessenger.getChatRoomName() != null) {
+                user = userManager.getUser(chatName);
+                if(user.getChatRoomName() != null) {
                     // 삭제할 채팅방 정보 조회
-                    List<UserMessenger> targetList = groupManger.removeUserByChatRoom(userMessenger.getChatRoomName(), userMessenger);
+                    List<User> targetList = groupManger.removeUserByChatRoom(user.getChatRoomName(), user);
                     // 퇴장 메시지 브로드 캐스트
-                    broadcastMessage(targetList, createMessage(EXIT_ROOM, userMessenger.getChatName() + " has just left [" + userMessenger.getChatRoomName() + "] room"));
+                    broadcastMessage(targetList, createMessage(EXIT_ROOM, user.getChatName() + " has just left [" + user.getChatRoomName() + "] room"));
                     // 유저 리스트 브로드 캐스트
-                    broadcastMessage(targetList, createMessage(USER_LIST, groupManger.getUserByChatRoomToString(userMessenger.getChatRoomName())));
+                    broadcastMessage(targetList, createMessage(USER_LIST, groupManger.getUserByChatRoomToString(user.getChatRoomName())));
                 }
-                userMessenger.setChatRoomName(msg);
+                user.setChatRoomName(msg);
                 // 생성할 채팅방 정보 조회
-                List<UserMessenger> targetList = groupManger.addUserByChatRoom(userMessenger.getChatRoomName(), userMessenger);
+                List<User> targetList = groupManger.addUserByChatRoom(user.getChatRoomName(), user);
                 // 입장 메시지 브로드 캐스트
-                broadcastMessage(targetList, createMessage(ENTER_ROOM, userMessenger.getChatName() + " has entered [" + userMessenger.getChatRoomName() + "] room"));
+                broadcastMessage(targetList, createMessage(ENTER_ROOM, user.getChatName() + " has entered [" + user.getChatRoomName() + "] room"));
                 // 유저 리스트 브로드 캐스트
-                broadcastMessage(targetList, createMessage(USER_LIST, groupManger.getUserByChatRoomToString(userMessenger.getChatRoomName())));
+                broadcastMessage(targetList, createMessage(USER_LIST, groupManger.getUserByChatRoomToString(user.getChatRoomName())));
                 break;
             // 채팅방 생성
             case CREATE_ROOM:
                 if (groupManger.isContains(msg)) {
-                    userMessenger = userMessengerManager.getUserMessenger(chatName);
-                    setStrategy(userMessenger);
                     sendMessage(createMessage(CREATE_ROOM, "이미 존재하는 채팅방"));
                 } else {
                     groupManger.addChatRoom(msg);
-                    broadcastMessage(userMessengerManager.findAllMessageHandler(), createMessage(ROOM_LIST, groupManger.getRoomsToString()));
+                    broadcastMessage(userManager.findAllMessageHandler(), createMessage(ROOM_LIST, groupManger.getRoomsToString()));
                 }
                 break;
             // 채팅방 메시지
             case NORMAL:
-                userMessenger = userMessengerManager.getUserMessenger(chatName);
+                user = userManager.getUser(chatName);
                 String[] msgSplit = msg.split("\\|");
                 String sendMsg = msgSplit[1];
-                targetList = groupManger.findAllMessageHandler(userMessenger.getChatRoomName());
-                broadcastMessage(targetList, createMessage(NORMAL, String.format("%s: %s", userMessenger.getChatName(), sendMsg)));
+                targetList = groupManger.findAllMessageHandler(user.getChatRoomName());
+                broadcastMessage(targetList, createMessage(NORMAL, String.format("%s: %s", user.getChatName(), sendMsg)));
                 break;
             case REMOVE_ROOM:
-                userMessenger = userMessengerManager.getUserMessenger(chatName);
-                groupManger.removeChatRoom(userMessenger.getChatRoomName());
+                user = userManager.getUser(chatName);
+                groupManger.removeChatRoom(user.getChatRoomName());
             case EXIT_PROGRAM:
-                userMessenger = userMessengerManager.getUserMessenger(chatName);
-                userMessengerManager.removeUser(userMessenger);
+                user = userManager.getUser(chatName);
+                userManager.removeUser(user);
             default:
                 System.out.printf("ChatCommand %c \n", command);
                 break;
