@@ -12,8 +12,6 @@ public interface MessageHandler {
 
     public String getFrom();
 
-    public void run();
-
     public void sendMessage(String msg);
 
     public String getMessage() throws IOException;
