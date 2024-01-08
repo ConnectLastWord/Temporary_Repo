@@ -21,6 +21,4 @@ public class LoginMessenger extends Messenger{
     public String readLine() throws IOException {
         return br.readLine();
     }
-
-
 }

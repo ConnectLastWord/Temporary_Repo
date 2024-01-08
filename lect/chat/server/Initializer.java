@@ -1,6 +1,5 @@
 package lect.chat.server;
 
-import lect.chat.server.application.messenger.LoginMessenger;
 import lect.chat.server.application.messageHandler.MessageHandler;
 import lect.chat.server.application.messageHandler.MessageHandlerImpl;
 import lect.chat.server.application.socket.SocketManager;
@@ -10,7 +9,6 @@ import java.net.Socket;
 
 public class Initializer implements Runnable{
     SocketManager socketManager;
-    LoginMessenger loginMessenger;
 
     public Initializer(Socket socket) throws IOException {
         socketManager = new SocketManager(socket);

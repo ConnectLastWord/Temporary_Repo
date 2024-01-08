@@ -17,7 +17,7 @@ public class UserMessengerFactory {
         return instance;
     }
 
-    public UserMessenger getUser(char protocol, Socket socket, String userName, String userId, BufferedReader br, PrintWriter pw, String host) {
+    public UserMessenger getUser(char protocol, String userName, String userId, BufferedReader br, PrintWriter pw, String host) {
         if(protocol == ChatCommandUtil.CREATE_DEFAULT_USER)
             return new DefaultUserMessenger(userName, userId, br, pw, host);
         else if(protocol == ChatCommandUtil.CREATE_ANONYMOUS_USER)

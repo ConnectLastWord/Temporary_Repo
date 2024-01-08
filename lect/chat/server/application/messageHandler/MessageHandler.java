@@ -18,8 +18,6 @@ public interface MessageHandler {
 
     public String getMessage() throws IOException;
 
-    public void close();
-
     public void close(String chatName);
 
     public String createMessage(char protocol, String s);

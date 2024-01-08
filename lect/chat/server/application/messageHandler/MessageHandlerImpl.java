@@ -1,5 +1,6 @@
 package lect.chat.server.application.messageHandler;
 
+import lect.chat.server.application.messenger.BroadcastMessenger;
 import lect.chat.server.application.messenger.LoginMessenger;
 import lect.chat.server.application.messenger.Messenger;
 import lect.chat.server.application.socket.SocketManager;
@@ -32,7 +33,8 @@ public class MessageHandlerImpl implements MessageHandler {
     LoginMessenger loginMessenger;
     // user 전략
     UserMessenger userMessenger;
-
+    // broadcast 전략
+    BroadcastMessenger broadcastMessenger;
     public MessageHandlerImpl(SocketManager socketManager) throws IOException {
         userMessengerManager = UserMessengerManager.getInstance();
         groupManger = GroupManager.getInstance();
@@ -41,8 +43,6 @@ public class MessageHandlerImpl implements MessageHandler {
         loginMessenger = new LoginMessenger(
                 new BufferedReader(new InputStreamReader(socketManager.getSocket().getInputStream())),
                 new PrintWriter(socketManager.getSocket().getOutputStream(), true));
-        // user 전략 초기화
-        userMessenger = null;
     }
 
     public void run() {
@@ -67,12 +67,11 @@ public class MessageHandlerImpl implements MessageHandler {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            UserMessenger userMessenger = userMessengerManager.getUserMessenger(chatName);
             // 삭제할 채팅방 정보 조회지
             List<UserMessenger> targetList = groupManger.removeUserByChatRoom(userMessenger.getChatRoomName(), userMessenger);
             // 퇴장 메시지 브로드 캐스트
             broadcastMessage(targetList, createMessage(EXIT_ROOM, userMessenger.getChatName() + " has just left [" + userMessenger.getChatRoomName() + "] room"));
-            close();
+            close(chatName);
         }
         System.out.println("Terminating ClientHandler");
     }
@@ -90,6 +89,9 @@ public class MessageHandlerImpl implements MessageHandler {
     private void setStrategy(Messenger strategy) {
         this.strategy = strategy;
     }
+//    private void setStrategy(Messenger strategy, List<T> targetList) {
+//        this.strategy = strategy;
+//    }
 
     public String getMessage() throws IOException {
         return strategy.readLine();
@@ -104,11 +106,6 @@ public class MessageHandlerImpl implements MessageHandler {
         for (UserMessenger userMessenger : targetList) {
             userMessenger.println(msg);
         }
-    }
-
-    public void close() {
-        UserMessenger userMessenger = userMessengerManager.getUserMessenger(chatName);
-        userMessenger.close();
     }
 
     public void close(String chatName) {
@@ -157,7 +154,7 @@ public class MessageHandlerImpl implements MessageHandler {
 
                     Socket socket = socketManager.getSocket();
                     chatName = userMessengerManager.addUser(CREATE_DEFAULT_USER,
-                            socket, nameWithId[0],
+                            nameWithId[0],
                             nameWithId[1],
                             new BufferedReader(new InputStreamReader(socket.getInputStream())),
                             new PrintWriter(socket.getOutputStream(), true), socket.getInetAddress().getHostAddress());

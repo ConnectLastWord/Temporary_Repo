@@ -9,7 +9,6 @@ public abstract class Messenger {
     protected BufferedReader br;
     protected PrintWriter pw;
 
-//    public abstract void println(String msg);
     public abstract void println(String msg);
     public abstract String readLine() throws IOException;
 }

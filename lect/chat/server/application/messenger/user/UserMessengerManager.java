@@ -2,17 +2,14 @@ package lect.chat.server.application.messenger.user;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.List;
 
 public class UserMessengerManager {
     private static UserMessengerManager instance;
-    private static UserRepo userRepo;
-    private static UserMessengerFactory userMessengerFactory;
+    private static UserMessengerRepo userMessengerRepo;
 
     private UserMessengerManager() {
-        userRepo = UserRepo.getInstance();
-        userMessengerFactory = UserMessengerFactory.getInstance();
+        userMessengerRepo = UserMessengerRepo.getInstance();
     }
 
     // 싱글톤 패턴 구현
@@ -24,28 +21,25 @@ public class UserMessengerManager {
     }
 
     // 사용자 추가
-    public String addUser(char protocol, Socket socket, String chatName, String chatId, BufferedReader br, PrintWriter pw, String host) {
-        UserMessenger userMessenger = userMessengerFactory.getUser(protocol, socket, chatName, chatId, br, pw, host);
-        userRepo.add(userMessenger);
-
-        return userMessenger.getChatName();
+    public String addUser(char protocol, String chatName, String chatId, BufferedReader br, PrintWriter pw, String host) {
+        return userMessengerRepo.add(protocol, chatName, chatId, br, pw, host).getChatName();
     }
 
     // 사용자 삭제
     public void removeUser(UserMessenger userMessenger) {
-        userRepo.remove(userMessenger);
+        userMessengerRepo.remove(userMessenger);
     }
     // 포함 여부
     public boolean isContains(String userName) {
-        return userRepo.isContains(userName);
+        return userMessengerRepo.isContains(userName);
     }
 
     public List<UserMessenger> findAllMessageHandler() {
-        return userRepo.getValues();
+        return userMessengerRepo.getValues();
     }
 
     public UserMessenger getUserMessenger(String chatName) {
-        return userRepo.getValue(chatName);
+        return userMessengerRepo.getValue(chatName);
     }
 
     public String getChatName(String chatName) {
@@ -53,7 +47,7 @@ public class UserMessengerManager {
     }
 
     public String getChatRoomName(String chatName) {
-        UserMessenger userMessenger = userRepo.getValue(chatName);
+        UserMessenger userMessenger = userMessengerRepo.getValue(chatName);
         return userMessenger.getChatRoomName();
     }
 }
