@@ -37,10 +37,23 @@ public class GroupController implements Controller {
                     String removeChatRoomName = user.getChatRoomName();
                     // 삭제할 채팅방 정보 조회
                     List<User> targetList = gM.removeUserByChatRoom(user.getChatRoomName(), user);
-                    // 퇴장 메시지 브로드 캐스트
-                    broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM_MESSAGE, user.getChatName() + " has just left [" + user.getChatRoomName() + "] room"));
-                    // 유저 리스트 브로드 캐스트
-                    broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(removeChatRoomName)));
+                    if (targetList.size() == 0) {
+                        gM.removeChatRoom(removeChatRoomName);
+                        broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ENTER_ROOM, gM.getRoomsToString()));
+                        user.setChatRoomName(msg);
+                        // 입장할 채팅방 유저 리스트 조회
+                        targetList = gM.addUserByChatRoom(user.getChatRoomName(), user);
+                        // 입장 메시지 브로드 캐스트
+                        broadcastMessage(targetList, createMessage(ChatCommandUtil.ENTER_ROOM_MESSAGE, user.getChatName() + " has entered [" + user.getChatRoomName() + "] room"));
+                        // 유저 리스트 브로드 캐스트
+                        broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(user.getChatRoomName())));
+                        break;
+                    } else {
+                        // 퇴장 메시지 브로드 캐스트
+                        broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM_MESSAGE, user.getChatName() + " has just left [" + user.getChatRoomName() + "] room"));
+                        // 유저 리스트 브로드 캐스트
+                        broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(removeChatRoomName)));
+                    }
                 }
                 user.setChatRoomName(msg);
                 // 생성할 채팅방 정보 조회

@@ -11,10 +11,10 @@ public class ChatCommandUtil {
     public static final char ENTER_ROOM = 'r';
     public static final char ENTER_ROOM_MESSAGE = 'e';
     public static final char EXIT_ROOM_MESSAGE = 'f';
+    //    public static final char SHOW_ROOM_LIST = 'x';
     // 사용자 목록
     public static final char USER_LIST = 'd';
     public static final char UNKNOWN = 'z';
-    public static final char EXIT_PROGRAM = 'x';
 
     public static final char REMOVE_ROOM = 'g';
     public static final char LOGIN_ANOYMOUS = 'y';

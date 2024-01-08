@@ -30,7 +30,7 @@ public class GroupRepo {
 
     // 채팅방 삭제
     public void remove(String name) {
-
+        roomsList.remove(name);
     }
 
     // 채팅방 조회
