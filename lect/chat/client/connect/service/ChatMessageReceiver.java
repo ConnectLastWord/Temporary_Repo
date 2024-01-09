@@ -40,7 +40,6 @@ public class ChatMessageReceiver implements Runnable, ChatSocketListener {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
             System.out.println("Terminating ChatMessageReceiver: " + e.getMessage());
         } finally {
             connector.invalidateSocket();
@@ -49,6 +48,11 @@ public class ChatMessageReceiver implements Runnable, ChatSocketListener {
     }
 
     public void socketClosed() {
+        try {
+            reader.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void socketConnected(Socket s) throws IOException {
@@ -57,6 +61,11 @@ public class ChatMessageReceiver implements Runnable, ChatSocketListener {
     }
 
     public void checkUserName(Socket s) {
+    }
+
+    @Override
+    public void loginByAnoymous(Socket s) {
+
     }
 
     public void initConnect(Socket s) {

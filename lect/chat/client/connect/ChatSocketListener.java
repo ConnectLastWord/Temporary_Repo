@@ -9,4 +9,6 @@ public interface ChatSocketListener {
     public void socketConnected(Socket s) throws IOException;
 
     public void checkUserName(Socket s);
+
+    public void loginByAnoymous(Socket s);
 }

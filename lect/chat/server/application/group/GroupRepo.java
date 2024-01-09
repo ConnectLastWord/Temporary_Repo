@@ -1,6 +1,6 @@
 package lect.chat.server.application.group;
 
-import lect.chat.server.application.user.User;
+import lect.chat.server.application.user.UserInfo;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +30,7 @@ public class GroupRepo {
 
     // 채팅방 삭제
     public void remove(String name) {
-
+        roomsList.remove(name);
     }
 
     // 채팅방 조회
@@ -39,7 +39,7 @@ public class GroupRepo {
     }
 
     // 채팅방 사용자 조회
-    public List<User> findAllMessageHandler(String roomName) {
+    public List<UserInfo> findAllMessageHandler(String roomName) {
         return getGroup(roomName).getClientList();
     }
 

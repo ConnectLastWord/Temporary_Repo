@@ -16,6 +16,12 @@ public class ChatRoomList extends JList {
         this.setDropMode(DropMode.ON);
     }
 
+    // 채팅방 초기화
+    public void removeAllChatRoom() {
+        DefaultListModel model = (DefaultListModel) getModel();
+        model.removeAllElements();
+    }
+
     // 새로운 채팅방 추가
     public void addNewRooms(ArrayList<ChatRoom> rooms) {
         DefaultListModel newModel = new DefaultListModel();
