@@ -86,7 +86,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         c = new GridBagConstraints();
         titleLabel = new JLabel("List of Room", JLabel.CENTER);
         c.gridy = 0;
-        c.gridx = 4;
+        c.gridx = 5;
         c.insets = new Insets(2, 2, 2, 2);
         add(titleLabel, c);
 
@@ -314,7 +314,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
 
     public void loginByAnoymous(Socket s) {
         writer.println(createMessage(ChatCommandUtil.LOGIN_ANOYMOUS,
-                "익명 사용자"));
+                String.format("%s|%s", "익명 사용자", connector.getId())));
     }
 
     private void displayUserList(String users) {
@@ -323,6 +323,8 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         ArrayList<ChatUser> list = new ArrayList<>();
         for (String strUser : strUsers) {
             nameWithIdHost = strUser.split(",");
+            System.out.println("id : " + connector.getId());
+            System.out.println("[1] : " + nameWithIdHost[1]);
             if (connector.getId().equals(nameWithIdHost[1])) {
                 continue;
             }
@@ -351,5 +353,10 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         msgBuilder.append("]");
         msgBuilder.append(msg);
         return msgBuilder.toString();
+    }
+
+    private void displayErrorMessage(String message, String title) {
+        JOptionPane.showMessageDialog(this, message, title,
+                JOptionPane.WARNING_MESSAGE);
     }
 }
