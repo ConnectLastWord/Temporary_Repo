@@ -47,6 +47,7 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
             // 퇴장 메시지 브로드 캐스트
             broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM,
                     user.getChatName() + " has just left [" + user.getChatRoomName() + "] room"));
+            broadcastMessage(mM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_SIZE, gM.getGroupSize()));
             close();
         }
             System.out.println("Terminating ClientHandler");
