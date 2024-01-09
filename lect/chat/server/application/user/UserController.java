@@ -5,7 +5,6 @@ import lect.chat.server.application.controller.Controller;
 import lect.chat.server.application.group.GroupManager;
 import lect.chat.server.application.messageHandler.MessageHandlerImpl;
 
-import java.io.IOException;
 import java.util.List;
 
 public class UserController implements Controller {
@@ -14,20 +13,13 @@ public class UserController implements Controller {
     private char command;
     private String msg;
 
-    public UserController() throws IOException {
+    public UserController() {
         this.uM = UserManager.getInstance();
         this.gM = GroupManager.getInstance();
     }
 
     @Override
     public void handleController(char command, String msg) {
-        this.command = command;
-        this.msg = msg;
-        processMessage();
-    }
-
-    @Override
-    public void processMessage() {
         switch (command) {
             // 로그인
             case ChatCommandUtil.LOGIN:

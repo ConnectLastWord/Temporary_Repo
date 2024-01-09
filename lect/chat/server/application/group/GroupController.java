@@ -22,13 +22,6 @@ public class GroupController implements Controller {
 
     @Override
     public void handleController(char command, String msg) {
-        this.command = command;
-        this.msg = msg;
-        processMessage();
-    }
-
-    @Override
-    public void processMessage() {
         switch (command) {
             case ChatCommandUtil.ENTER_ROOM:
                 if (MessageHandlerImpl.req.get().getChatRoomName() != null) {

@@ -16,7 +16,6 @@ import java.net.Socket;
 public class MessageHandlerImpl implements Runnable, MessageHandler {
     public static ThreadLocal<UserInfo> req = new ThreadLocal<UserInfo>();
     private Socket s;
-    public BufferedReader br;
     private GroupController gC;
     private UserController uC;
 
@@ -35,8 +34,6 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("req초기화");
-        br = req.get().getBr();
         try {
             while (true) {
                 msg = getMessage();
@@ -56,15 +53,12 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
     }
 
     public String getMessage() throws IOException {
-        return br.readLine();
+        return MessageHandlerImpl.req.get().readLine();
     }
 
     public void close() {
-        try {
-            br.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        MessageHandlerImpl.req
+                .get().close();
     }
 
     // 핸들러는 해당 요청이 어느 컨트롤러로 가야하는 지?
