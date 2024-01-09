@@ -1,5 +1,6 @@
 package lect.chat.server.application.group;
 
+import java.util.Arrays;
 import java.util.List;
 import lect.chat.server.application.user.User;
 
@@ -72,10 +73,11 @@ public class GroupManager {
     }
 
     public String getGroupSize(){
-        return groupRepo.getRoomSize();
-    }
-
-    public int getRoomsSize(){
-        return groupRepo.getSize();
+        int[] sizeArray = groupRepo.getValueSizeSet();
+        if (sizeArray.length > 0) {
+            String[] roomSizeArray = Arrays.stream(groupRepo.getValueSizeSet()).mapToObj(String::valueOf).toArray(String[]::new);
+            return String.join("|", roomSizeArray);
+        }
+        return null;
     }
 }

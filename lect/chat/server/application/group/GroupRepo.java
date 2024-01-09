@@ -1,6 +1,5 @@
 package lect.chat.server.application.group;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +54,7 @@ public class GroupRepo {
 
     public int[] getValueSizeSet() {
         if (roomsList != null) {
-            return roomsList.values().stream().mapToInt(it-> it.getSize()).toArray();
+            return roomsList.values().stream().mapToInt(Group::getSize).toArray();
         }
         return null;
     }
@@ -71,13 +70,5 @@ public class GroupRepo {
         String[] names = getKeySet().toArray(new String[0]);
         StringBuilder rooms = new StringBuilder(String.join("|", names));
         return rooms.toString();
-    }
-
-    public String getRoomSize() {
-        if (getValueSizeSet().length > 0) {
-            String[] roomSizeArray = Arrays.stream(getValueSizeSet()).mapToObj(String::valueOf).toArray(String[]::new);
-            return String.join("|", roomSizeArray);
-        }
-        return null;
     }
 }
