@@ -10,8 +10,6 @@ import java.util.List;
 public class UserController implements Controller {
     private UserManager uM;
     private GroupManager gM;
-    private char command;
-    private String msg;
 
     public UserController() {
         this.uM = UserManager.getInstance();

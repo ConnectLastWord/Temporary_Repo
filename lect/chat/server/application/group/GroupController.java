@@ -12,8 +12,6 @@ import java.util.List;
 public class GroupController implements Controller {
     private GroupManager gM;
     private UserManager uM;
-    private char command;
-    private String msg;
 
     public GroupController() throws IOException {
         this.gM = GroupManager.getInstance();
