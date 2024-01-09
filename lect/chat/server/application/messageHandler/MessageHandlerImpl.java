@@ -2,7 +2,6 @@ package lect.chat.server.application.messageHandler;
 
 import lect.chat.server.application.group.GroupManager;
 import lect.chat.server.application.socket.LoginManager;
-import lect.chat.server.application.socket.SocketManager;
 import lect.chat.server.application.user.User;
 import lect.chat.server.application.user.UserManager;
 
@@ -16,20 +15,20 @@ import java.util.List;
 import static lect.chat.protocol.ChatCommandUtil.*;
 
 // 사용자 메시지를 전달하기 위한 구현체 = 하나의 클라이언트와 통신하기 위한 객체, 스레드
-public class MessageHandlerImpl implements MessageHandler {
+public class MessageHandlerImpl implements Runnable, MessageHandler {
 //    private User user;
     String chatName;
+    Socket socket;
     // 모든 사용자 관리자
     private UserManager mM;
     // 채팅방 관리자
     private GroupManager gM;
     // 로그인 관리자
     private LoginManager loginManager;
-    private SocketManager socketManager;
-    public MessageHandlerImpl(SocketManager socketManager) throws IOException {
+    public MessageHandlerImpl(Socket socket) throws IOException {
         mM = UserManager.getInstance();
         gM = GroupManager.getInstance();
-        this.socketManager = socketManager;
+        this.socket = socket;
 //        loginManager.init(new BufferedReader(new InputStreamReader(s.getInputStream())),
 //                new PrintWriter(s.getOutputStream(), true));
         System.out.println("message handler 생성");
@@ -42,6 +41,7 @@ public class MessageHandlerImpl implements MessageHandler {
             processMessage(msg);
         } catch (IOException e) {
             e.printStackTrace();
+            close();
         }
         try {
             while (true) {
@@ -87,9 +87,8 @@ public class MessageHandlerImpl implements MessageHandler {
     }
 
     public String getLoginMessage() throws IOException {
-        Socket s = socketManager.getSocket();
-        loginManager = new LoginManager(new BufferedReader(new InputStreamReader(s.getInputStream())),
-                new PrintWriter(s.getOutputStream(), true));
+        loginManager = new LoginManager(new BufferedReader(new InputStreamReader(socket.getInputStream())),
+                new PrintWriter(socket.getOutputStream(), true));
         return loginManager.readLine();
     }
 
@@ -151,7 +150,6 @@ public class MessageHandlerImpl implements MessageHandler {
                 }
                 else {
                     // user가 존재하지 않는 경우에는 로그인
-                    Socket socket = socketManager.getSocket();
                     chatName = mM.addUser(CREATE_DEFAULT_USER,
                             nameWithId[0], nameWithId[1],
                             new BufferedReader(new InputStreamReader(socket.getInputStream())),
@@ -163,7 +161,6 @@ public class MessageHandlerImpl implements MessageHandler {
                 }
                 break;
             case CREATE_ANONYMOUS_USER:
-                Socket socket = socketManager.getSocket();
                 chatName = mM.addUser(CREATE_ANONYMOUS_USER,
                         "",
                         msg,
