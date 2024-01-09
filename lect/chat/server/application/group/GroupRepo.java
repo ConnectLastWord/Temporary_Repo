@@ -1,11 +1,10 @@
 package lect.chat.server.application.group;
 
-import lect.chat.server.application.user.UserInfo;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import lect.chat.server.application.user.UserInfo;
 
 public class GroupRepo {
     private static GroupRepo instance;
@@ -64,5 +63,12 @@ public class GroupRepo {
         String[] names = getKeySet().toArray(new String[0]);
         StringBuilder rooms = new StringBuilder(String.join("|", names));
         return rooms.toString();
+    }
+
+    public int[] getValueSizeSet() {
+        if (roomsList != null) {
+            return roomsList.values().stream().mapToInt(Group::getSize).toArray();
+        }
+        return null;
     }
 }

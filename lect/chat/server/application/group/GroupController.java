@@ -37,12 +37,14 @@ public class GroupController implements Controller {
                         broadcastMessage(targetList, createMessage(ChatCommandUtil.ENTER_ROOM_MESSAGE, MessageHandlerImpl.req.get().getChatName() + " has entered [" + MessageHandlerImpl.req.get().getChatRoomName() + "] room"));
                         // 유저 리스트 브로드 캐스트
                         broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(MessageHandlerImpl.req.get().getChatRoomName())));
+                        broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_SIZE, gM.getGroupSize()));
                         break;
                     } else {
                         // 퇴장 메시지 브로드 캐스트
                         broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM_MESSAGE, MessageHandlerImpl.req.get().getChatName() + " has just left [" + MessageHandlerImpl.req.get().getChatRoomName() + "] room"));
                         // 유저 리스트 브로드 캐스트
                         broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(removeChatRoomName)));
+                        broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_SIZE, gM.getGroupSize()));
                     }
                 }
                 MessageHandlerImpl.req.get().setChatRoomName(msg);
@@ -52,6 +54,7 @@ public class GroupController implements Controller {
                 broadcastMessage(targetList, createMessage(ChatCommandUtil.ENTER_ROOM_MESSAGE, MessageHandlerImpl.req.get().getChatName() + " has entered [" + MessageHandlerImpl.req.get().getChatRoomName() + "] room"));
                 // 유저 리스트 브로드 캐스트
                 broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(MessageHandlerImpl.req.get().getChatRoomName())));
+                broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_SIZE, gM.getGroupSize()));
                 break;
             case ChatCommandUtil.CREATE_ROOM:
                 if (gM.isContains(msg)) {
@@ -59,6 +62,7 @@ public class GroupController implements Controller {
                 } else {
                     gM.addChatRoom(msg);
                     broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ENTER_ROOM, gM.getRoomsToString()));
+                    broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_SIZE, gM.getGroupSize()));
                 }
                 break;
             case ChatCommandUtil.NORMAL:
@@ -69,6 +73,7 @@ public class GroupController implements Controller {
                 break;
             case ChatCommandUtil.REMOVE_ROOM:
                 gM.removeChatRoom(MessageHandlerImpl.req.get().getChatRoomName());
+                broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_SIZE, gM.getGroupSize()));
                 break;
         }
 
