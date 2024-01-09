@@ -16,6 +16,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 
 // 컴포넌트 기반 신호 리스너
 @SuppressWarnings("serial")
@@ -86,7 +92,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         c = new GridBagConstraints();
         titleLabel = new JLabel("List of Room", JLabel.CENTER);
         c.gridy = 0;
-        c.gridx = 4;
+        c.gridx = 5;
         c.insets = new Insets(2, 2, 2, 2);
         add(titleLabel, c);
 
@@ -351,5 +357,10 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         msgBuilder.append("]");
         msgBuilder.append(msg);
         return msgBuilder.toString();
+    }
+
+    private void displayErrorMessage(String message, String title) {
+        JOptionPane.showMessageDialog(this, message, title,
+                JOptionPane.WARNING_MESSAGE);
     }
 }
