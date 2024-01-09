@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class UserRepo {
     private static UserRepo instance;
-    private static Map<String, User> clientList;
+    private static Map<String, UserInfo> clientList;
 
     private UserRepo() {
         clientList = new HashMap<>();
@@ -21,18 +21,18 @@ public class UserRepo {
     }
 
     // 사용자 추가
-    public void add(User user) {
-        clientList.put(user.getChatName(), user);
+    public void add(UserInfo userInfo) {
+        clientList.put(userInfo.getChatName(), userInfo);
     }
 
     // 사용자 삭제
-    public void remove(User user) {
-        clientList.remove(user.getChatName());
+    public void remove(UserInfo userInfo) {
+        clientList.remove(userInfo.getChatName());
     }
 
 
     // 모든 사용자 조회
-    public List<User> getValues() {
+    public List<UserInfo> getValues() {
         return clientList.values().stream().toList();
     }
 

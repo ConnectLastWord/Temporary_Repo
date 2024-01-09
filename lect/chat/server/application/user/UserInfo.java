@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public abstract class User {
+public abstract class UserInfo {
     Socket socket;
     BufferedReader br;
     PrintWriter pw;
@@ -14,7 +14,7 @@ public abstract class User {
     private String host;
     private String chatRoomName;
 
-    public User(Socket socket, BufferedReader br, PrintWriter pw, String host) {
+    public UserInfo(Socket socket, BufferedReader br, PrintWriter pw, String host) {
         this.socket = socket;
         this.br = br;
         this.pw = pw;
@@ -63,5 +63,17 @@ public abstract class User {
 
     public void println(String msg) {
         pw.println(msg);
+    }
+
+    public PrintWriter getPw() {
+        return pw;
+    }
+
+    public BufferedReader getBr() {
+        return br;
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
 }

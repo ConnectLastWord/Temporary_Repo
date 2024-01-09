@@ -2,9 +2,9 @@ package lect.chat.server.application.messageHandler;
 
 import lect.chat.protocol.ChatCommandUtil;
 import lect.chat.server.application.group.GroupController;
-import lect.chat.server.application.user.DefaultUser;
-import lect.chat.server.application.user.User;
+import lect.chat.server.application.user.DefaultUserInfo;
 import lect.chat.server.application.user.UserController;
+import lect.chat.server.application.user.UserInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,21 +14,29 @@ import java.net.Socket;
 
 // 사용자 메시지를 전달하기 위한 구현체 = 하나의 클라이언트와 통신하기 위한 객체, 스레드
 public class MessageHandlerImpl implements Runnable, MessageHandler {
+    public static ThreadLocal<UserInfo> req = new ThreadLocal<UserInfo>();
+    private Socket s;
     public BufferedReader br;
     private GroupController gC;
     private UserController uC;
 
     public MessageHandlerImpl(Socket s) throws IOException {
-        br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        User user = new DefaultUser(s,
-                new BufferedReader(new InputStreamReader(s.getInputStream())),
-                new PrintWriter(s.getOutputStream(), true), s.getInetAddress().getHostAddress());
-        gC = new GroupController(user);
-        uC = new UserController(user);
+        this.s = s;
+        gC = new GroupController();
+        uC = new UserController();
     }
 
     public void run() {
         String msg;
+        try {
+            req.set(new DefaultUserInfo(s,
+                    new BufferedReader(new InputStreamReader(s.getInputStream())),
+                    new PrintWriter(s.getOutputStream(), true), s.getInetAddress().getHostAddress()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("req초기화");
+        br = req.get().getBr();
         try {
             while (true) {
                 msg = getMessage();
@@ -68,6 +76,9 @@ public class MessageHandlerImpl implements Runnable, MessageHandler {
         switch (command) {
             // 로그인
             case ChatCommandUtil.LOGIN:
+                uC.handleController(command, msg);
+                break;
+            case ChatCommandUtil.LOGIN_ANOYMOUS:
                 uC.handleController(command, msg);
                 break;
             //  로그아웃

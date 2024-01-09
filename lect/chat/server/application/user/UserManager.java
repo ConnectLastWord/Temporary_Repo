@@ -19,13 +19,13 @@ public class UserManager {
     }
 
     // 사용자 추가
-    public void addUser(User user) {
-        userRepo.add(user);
+    public void addUser(UserInfo userInfo) {
+        userRepo.add(userInfo);
     }
 
     // 사용자 삭제
-    public void removeUser(User user) {
-        userRepo.remove(user);
+    public void removeUser(UserInfo userInfo) {
+        userRepo.remove(userInfo);
     }
 
     // 포함 여부
@@ -33,7 +33,7 @@ public class UserManager {
         return userRepo.isContains(userName);
     }
 
-    public List<User> findAllMessageHandler() {
+    public List<UserInfo> findAllMessageHandler() {
         return userRepo.getValues();
     }
 }
