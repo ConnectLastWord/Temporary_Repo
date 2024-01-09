@@ -36,15 +36,23 @@ public class UserController implements Controller {
                 }
                 break;
             case ChatCommandUtil.LOGIN_ANOYMOUS:
-                MessageHandlerImpl.req.set(
-                        new AnonymousUserInfo(MessageHandlerImpl.req.get().getSocket(),
-                                MessageHandlerImpl.req.get().getBr(),
-                                MessageHandlerImpl.req.get().getPw(),
-                                MessageHandlerImpl.req.get().getHost())
-                );
+                nameWithId = msg.split("\\|");
+                System.out.println("LOGIN_ANOYMOUS");
+                MessageHandlerImpl.req.set(new AnonymousUserInfo(
+                        MessageHandlerImpl.req.get().socket,
+                        MessageHandlerImpl.req.get().br,
+                        MessageHandlerImpl.req.get().pw,
+                        MessageHandlerImpl.req.get().getHost()
+                ));
+                MessageHandlerImpl.req.get().setId(nameWithId[1]);
+                System.out.println(nameWithId[1]);
                 sendMessage(createMessage(ChatCommandUtil.LOGIN, MessageHandlerImpl.req.get().getChatName()));
                 uM.addUser(MessageHandlerImpl.req.get());
                 broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ENTER_ROOM, gM.getRoomsToString()));
+                String roomSize = gM.getGroupSize();
+                if (roomSize!=null) {
+                    broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_SIZE, roomSize));
+                }
                 break;
             // 로그아웃
             case ChatCommandUtil.LOGOUT:
@@ -57,8 +65,9 @@ public class UserController implements Controller {
                     broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM_MESSAGE, MessageHandlerImpl.req.get().getChatName() + " has just left [" + MessageHandlerImpl.req.get().getChatRoomName() + "] room"));
                     // 유저 목록 브로드 캐스트
                     broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(MessageHandlerImpl.req.get().getChatRoomName())));
+                    broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_SIZE, gM.getGroupSize()));
                 }
-                break;
+                    break;
         }
     }
 

@@ -1,6 +1,5 @@
 package lect.chat.client.connect.service;
 
-import lect.chat.client.Connector;
 import lect.chat.client.connect.ChatConnector;
 import lect.chat.client.connect.ChatSocketListener;
 
@@ -15,8 +14,8 @@ public class ChatMessageReceiver implements Runnable, ChatSocketListener {
     private MessageReceiver receiver;
     ChatConnector connector;
 
-    public ChatMessageReceiver() {
-
+    public ChatMessageReceiver(ChatConnector c) {
+        connector = c;
     }
 
     public void setMessageReceiver(MessageReceiver r) {
@@ -26,7 +25,7 @@ public class ChatMessageReceiver implements Runnable, ChatSocketListener {
     // 채팅 기능을 위한 스레드
     public void run() {
         String msg;
-        Connector connector = Connector.getInstance();
+//        Connector connector = Connector.getInstance();
         try {
             while (connector.socketAvailable()) { //소켓이 null이나 closed가 아닌 경우
                 msg = reader.readLine();

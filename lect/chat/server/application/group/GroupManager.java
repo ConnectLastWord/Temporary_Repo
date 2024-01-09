@@ -1,8 +1,8 @@
 package lect.chat.server.application.group;
 
-import lect.chat.server.application.user.UserInfo;
-
+import java.util.Arrays;
 import java.util.List;
+import lect.chat.server.application.user.UserInfo;
 
 // GroupManager roomList객체만 관리 / MessageHandler는 관리 x
 public class GroupManager {
@@ -72,7 +72,12 @@ public class GroupManager {
         return groupRepo.findAllMessageHandler(name);
     }
 
-    public int countByChatRoom() {
-        return groupRepo.getSize();
+    public String getGroupSize(){
+        int[] sizeArray = groupRepo.getValueSizeSet();
+        if (sizeArray.length > 0) {
+            String[] roomSizeArray = Arrays.stream(groupRepo.getValueSizeSet()).mapToObj(String::valueOf).toArray(String[]::new);
+            return String.join("|", roomSizeArray);
+        }
+        return null;
     }
 }
