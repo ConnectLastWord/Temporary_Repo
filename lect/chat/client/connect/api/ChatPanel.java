@@ -1,5 +1,6 @@
 package lect.chat.client.connect.api;
 
+import lect.chat.client.Connector;
 import lect.chat.client.components.*;
 import lect.chat.client.connect.ChatConnector;
 import lect.chat.client.connect.ChatSocketListener;
@@ -7,6 +8,7 @@ import lect.chat.client.connect.service.MessageReceiver;
 import lect.chat.client.model.ChatRoom;
 import lect.chat.client.model.ChatUser;
 import lect.chat.protocol.ChatCommandUtil;
+import lect.chat.protocol.ErrorCommandUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +18,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+
+import static lect.chat.protocol.ErrorCommandUtil.*;
 
 // 컴포넌트 기반 신호 리스너
 @SuppressWarnings("serial")
@@ -33,13 +43,11 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
     // 입장 버튼
     JButton enterChat;
     PrintWriter writer;
-    ChatConnector connector;
     StringBuilder msgBuilder = new StringBuilder();
 
-    public ChatPanel(ChatConnector c) {
+    public ChatPanel() {
         super(new GridBagLayout());
         initUI();
-        connector = c;
         chatTextField.addActionListener(this);
         connectDisconnect.addActionListener(this);
         clearChat.addActionListener(this);
@@ -172,21 +180,20 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 displayRoomList(msg);
                 break;
             case ChatCommandUtil.CHECK_USER_NAME:
-                if (msg.equals("false")) {
-                    JOptionPane.showMessageDialog(this, "이미 존재하는 닉네임", "Login Fail",
-                            JOptionPane.WARNING_MESSAGE);
+                Connector connector = Connector.getInstance();
+                if(msg.equals("false")) {
+                    displayErrorMessage("이미 존재하는 닉네임입니다. 다른 닉네임을 사용해주세요", LOG_IN_FAIL);
                     connector.disConnect();
                     connectDisconnect.toButton(CommandButton.CMD_CONNECT);
                     room = null;
-                } else {
+                }else {
                     // user이름을 받아 statusBar에 설정
                     StatusBar statusBar = StatusBar.getStatusBar();
                     statusBar.setUserName(msg);
-                    connector.setName(msg);
                 }
                 break;
             case ChatCommandUtil.CREATE_ROOM:
-                JOptionPane.showMessageDialog(this, msg, "Fail Create ChatRoom", JOptionPane.WARNING_MESSAGE);
+                displayErrorMessage(msg, ROOM_CREATE_FAIL);
                 break;
             default:
                 break;
@@ -195,6 +202,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
 
     // 클라이언트(컴포넌트 신호)로부터 신호가 들어왔을 때
     public void actionPerformed(ActionEvent e) {
+        Connector connector = Connector.getInstance();
         Object sourceObj = e.getSource();
         if (sourceObj == chatTextField) {
             String msgToSend = chatTextField.getText();
@@ -233,8 +241,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 if (roomList.getSelectedValue() != room) {
                     room = (ChatRoom) roomList.getSelectedValue();
                     if (room == null) {
-                        JOptionPane.showMessageDialog(this, "Room to Enter to must be selected", "EnterChat",
-                                JOptionPane.WARNING_MESSAGE);
+                        displayErrorMessage("들어갈 방을 선택해주세요", ROOM_ENTER_FAIL);
                         return;
                     }
                     sendMessage(ChatCommandUtil.ROOM_LIST, room.getName());
@@ -245,8 +252,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                     chatDispArea.initDisplay();
                     return;
                 }
-                JOptionPane.showMessageDialog(this, "이미 접속해있는 방입니다.", "ChatRoom",
-                        JOptionPane.WARNING_MESSAGE);
+                displayErrorMessage("이미 접속한 방입니다", ROOM_ENTER_FAIL);
             }
             // 채팅방 생성 버튼
             else {
@@ -255,8 +261,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                     return;
                 }
                 if (chatName.trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "방 이름은 공백이 안됩니다", "Faild Create ChatRoom",
-                            JOptionPane.WARNING_MESSAGE);
+                    displayErrorMessage("방 이름은 공백이 안됩니다", ROOM_CREATE_FAIL);
                 }
                 if (connector.socketAvailable()) {
                     sendMessage(ChatCommandUtil.CREATE_ROOM, chatName);
@@ -300,6 +305,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
 
     public void checkUserName(Socket s) {
         // 이름 검사
+        Connector connector = Connector.getInstance();
         writer.println(createMessage(ChatCommandUtil.CHECK_USER_NAME,
                 String.format("%s|%s", connector.getName(), connector.getId())));
     }
@@ -308,6 +314,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         String[] strUsers = users.split("\\|");
         String[] nameWithIdHost;
         ArrayList<ChatUser> list = new ArrayList<>();
+        Connector connector = Connector.getInstance();
         for (String strUser : strUsers) {
             nameWithIdHost = strUser.split(",");
             if (connector.getId().equals(nameWithIdHost[1])) {
@@ -338,5 +345,10 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
         msgBuilder.append("]");
         msgBuilder.append(msg);
         return msgBuilder.toString();
+    }
+
+    private void displayErrorMessage(String message, String title) {
+        JOptionPane.showMessageDialog(this, message, title,
+                JOptionPane.WARNING_MESSAGE);
     }
 }

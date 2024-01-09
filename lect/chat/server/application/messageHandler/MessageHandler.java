@@ -12,13 +12,13 @@ public interface MessageHandler {
 
     public String getFrom();
 
-    public void sendMessage(String msg);
+    public void run();
+
+    public void sendMessage(String chatName, String msg);
 
     public String getMessage() throws IOException;
 
-    public void close();
-
-    public void close(String userName);
+    public void close(String chatName);
 
     public String createMessage(char protocol, String s);
 }
