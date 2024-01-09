@@ -37,13 +37,15 @@ public class UserController implements Controller {
                 break;
             case ChatCommandUtil.LOGIN_ANOYMOUS:
                 nameWithId = msg.split("\\|");
-                MessageHandlerImpl.req.get().setId(nameWithId[1]);
+                System.out.println("LOGIN_ANOYMOUS");
                 MessageHandlerImpl.req.set(new AnonymousUserInfo(
                         MessageHandlerImpl.req.get().socket,
                         MessageHandlerImpl.req.get().br,
                         MessageHandlerImpl.req.get().pw,
                         MessageHandlerImpl.req.get().getHost()
                 ));
+                MessageHandlerImpl.req.get().setId(nameWithId[1]);
+                System.out.println(nameWithId[1]);
                 sendMessage(createMessage(ChatCommandUtil.LOGIN, MessageHandlerImpl.req.get().getChatName()));
                 uM.addUser(MessageHandlerImpl.req.get());
                 broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ENTER_ROOM, gM.getRoomsToString()));
