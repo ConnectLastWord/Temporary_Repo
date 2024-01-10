@@ -27,6 +27,7 @@ public class UserRepo {
 
     // 사용자 삭제
     public void remove(UserInfo userInfo) {
+        System.out.println("삭제 메서드 : " + userInfo.getChatName());
         clientList.remove(userInfo.getChatName());
     }
 
