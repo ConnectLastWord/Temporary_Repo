@@ -73,8 +73,10 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
                 case 1: // 일반 사용자
                     userName = JOptionPane.showInputDialog(chatWindow, "Enter user name:");
                     if (userName == null) {
+                        socket.close();
                         return false;
                     } else {
+                        System.out.println("Enter userName 값 : " + userName);
                         // 이름 검사를 한 후에 init message를 보냄
                         sListeners.get(0).checkUserName(socket);
                         return true;
