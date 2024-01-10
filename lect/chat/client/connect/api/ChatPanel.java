@@ -270,6 +270,7 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                                 JOptionPane.WARNING_MESSAGE);
                         return;
                     }
+
                     connector.setRoomName(room.getName());
                     sendMessage(ChatCommandUtil.ENTER_ROOM, room.getName());
                     // 컴포넌트 활성화

@@ -92,6 +92,8 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
 
     @Override
     public void disConnect() {
+        setName("");
+        setRoomName("");
         if (socketAvailable()) {
             try {
                 socket.close();
