@@ -62,6 +62,12 @@ public class UserController implements Controller {
                     List<UserInfo> targetList = gM.removeUserByChatRoom(MessageHandlerImpl.req.get().getChatRoomName(), MessageHandlerImpl.req.get());
                     // 현재 회원 정보 삭제
                     uM.removeUser(MessageHandlerImpl.req.get());
+                    if (targetList.size() == 0) {
+                        gM.removeChatRoom(MessageHandlerImpl.req.get().getChatRoomName());
+                        broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ENTER_ROOM, gM.getRoomsToString()));
+                        broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_SIZE, gM.getGroupSize()));
+                        return;
+                    }
                     // 퇴장 메시지 브로드 캐스트
                     broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM_MESSAGE, MessageHandlerImpl.req.get().getChatName() + " has just left [" + MessageHandlerImpl.req.get().getChatRoomName() + "] room"));
                     // 유저 목록 브로드 캐스트
