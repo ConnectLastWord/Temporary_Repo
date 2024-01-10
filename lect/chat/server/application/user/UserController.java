@@ -50,7 +50,7 @@ public class UserController implements Controller {
                 uM.addUser(MessageHandlerImpl.req.get());
                 broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ENTER_ROOM, gM.getRoomsToString()));
                 String roomSize = gM.getGroupSize();
-                if (roomSize!=null) {
+                if (roomSize != null) {
                     broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_SIZE, roomSize));
                 }
                 break;
@@ -60,14 +60,17 @@ public class UserController implements Controller {
                 if (MessageHandlerImpl.req.get().getChatRoomName() != null) {
                     // 삭제할 채팅방 정보 조회
                     List<UserInfo> targetList = gM.removeUserByChatRoom(MessageHandlerImpl.req.get().getChatRoomName(), MessageHandlerImpl.req.get());
+                    // 현재 회원 정보 삭제
                     uM.removeUser(MessageHandlerImpl.req.get());
                     // 퇴장 메시지 브로드 캐스트
                     broadcastMessage(targetList, createMessage(ChatCommandUtil.EXIT_ROOM_MESSAGE, MessageHandlerImpl.req.get().getChatName() + " has just left [" + MessageHandlerImpl.req.get().getChatRoomName() + "] room"));
                     // 유저 목록 브로드 캐스트
                     broadcastMessage(targetList, createMessage(ChatCommandUtil.USER_LIST, gM.getUserByChatRoomToString(MessageHandlerImpl.req.get().getChatRoomName())));
                     broadcastMessage(uM.findAllMessageHandler(), createMessage(ChatCommandUtil.ROOM_SIZE, gM.getGroupSize()));
-                }
                     break;
+                }
+                uM.removeUser(MessageHandlerImpl.req.get());
+                break;
         }
     }
 
