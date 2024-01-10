@@ -258,19 +258,18 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 chatDispArea.initDisplay();
             } else if (e.getActionCommand().equals("EnterChat")) {  //  채팅방 입장 버튼일때
                 if (roomList.getSelectedValue() != room) {
-
+                    System.out.println("접속 채팅방 이름 : " + connector.getRoomName());
                     room = (ChatRoom) roomList.getSelectedValue();
                     if (room == null) {
                         JOptionPane.showMessageDialog(this, "Room to Enter to must be selected", "EnterChat",
                                 JOptionPane.WARNING_MESSAGE);
                         return;
                     }
-                    if (!connector.getRoomName().equals("") && connector.getRoomName().equals(room.getName())) {
+                    if (room.getName().equals(connector.getRoomName())) {
                         JOptionPane.showMessageDialog(this, "이미 접속해있는 방입니다.", "ChatRoom",
                                 JOptionPane.WARNING_MESSAGE);
                         return;
                     }
-
                     connector.setRoomName(room.getName());
                     sendMessage(ChatCommandUtil.ENTER_ROOM, room.getName());
                     // 컴포넌트 활성화
@@ -278,6 +277,11 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                     chatDispArea.setEnabled(true);
                     chatTextField.setEnabled(true);
                     chatDispArea.initDisplay();
+                    return;
+                }
+                if (room.getName().equals(connector.getRoomName())) {
+                    JOptionPane.showMessageDialog(this, "이미 접속해있는 방입니다.", "ChatRoom",
+                            JOptionPane.WARNING_MESSAGE);
                     return;
                 }
             }
