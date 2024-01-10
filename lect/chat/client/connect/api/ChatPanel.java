@@ -1,32 +1,21 @@
 package lect.chat.client.connect.api;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.ArrayList;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import lect.chat.client.components.ChatRoomList;
-import lect.chat.client.components.ChatRoomSizeList;
-import lect.chat.client.components.ChatTextPane;
-import lect.chat.client.components.ChatUserList;
-import lect.chat.client.components.CommandButton;
-import lect.chat.client.components.StatusBar;
+import lect.chat.client.components.*;
 import lect.chat.client.connect.ChatConnector;
 import lect.chat.client.connect.ChatSocketListener;
 import lect.chat.client.connect.service.MessageReceiver;
 import lect.chat.client.model.ChatRoom;
 import lect.chat.client.model.ChatUser;
 import lect.chat.protocol.ChatCommandUtil;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.ArrayList;
 
 // 컴포넌트 기반 신호 리스너
 @SuppressWarnings("serial")
@@ -269,12 +258,19 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 chatDispArea.initDisplay();
             } else if (e.getActionCommand().equals("EnterChat")) {  //  채팅방 입장 버튼일때
                 if (roomList.getSelectedValue() != room) {
+
                     room = (ChatRoom) roomList.getSelectedValue();
                     if (room == null) {
                         JOptionPane.showMessageDialog(this, "Room to Enter to must be selected", "EnterChat",
                                 JOptionPane.WARNING_MESSAGE);
                         return;
                     }
+                    if (!connector.getRoomName().equals("") && connector.getRoomName().equals(room.getName())) {
+                        JOptionPane.showMessageDialog(this, "이미 접속해있는 방입니다.", "ChatRoom",
+                                JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    connector.setRoomName(room.getName());
                     sendMessage(ChatCommandUtil.ENTER_ROOM, room.getName());
                     // 컴포넌트 활성화
                     userList.setEnabled(true);
@@ -283,8 +279,6 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                     chatDispArea.initDisplay();
                     return;
                 }
-                JOptionPane.showMessageDialog(this, "이미 접속해있는 방입니다.", "ChatRoom",
-                        JOptionPane.WARNING_MESSAGE);
             }
             // 채팅방 생성 버튼
             else {
