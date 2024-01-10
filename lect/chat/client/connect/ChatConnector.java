@@ -18,4 +18,8 @@ public interface ChatConnector {
     public void setName(String userName);
 
     public String getId();
+
+    void setRoomName(String name);
+
+    String getRoomName();
 }

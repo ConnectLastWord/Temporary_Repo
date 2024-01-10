@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class ChatClient extends WindowAdapter implements ChatConnector {
     private Socket socket;
     private String userName;
+    private String roomName = "";
     private String id;
     private ArrayList<ChatSocketListener> sListeners = new ArrayList<>();
     private JFrame chatWindow;
@@ -91,6 +92,8 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
 
     @Override
     public void disConnect() {
+        setName("");
+        setRoomName("");
         if (socketAvailable()) {
             try {
                 socket.close();
@@ -130,6 +133,16 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public String getRoomName() {
+        return roomName;
+    }
+
+    @Override
+    public void setRoomName(String name) {
+        this.roomName = name;
     }
 
     public void addChatSocketListener(ChatSocketListener lsnr) {
