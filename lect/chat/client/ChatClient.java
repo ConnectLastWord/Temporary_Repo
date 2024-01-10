@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class ChatClient extends WindowAdapter implements ChatConnector {
     private Socket socket;
     private String userName;
+    private String roomName = "";
     private String id;
     private ArrayList<ChatSocketListener> sListeners = new ArrayList<>();
     private JFrame chatWindow;
@@ -72,8 +73,14 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
                 case 1: // 일반 사용자
                     userName = JOptionPane.showInputDialog(chatWindow, "Enter user name:");
                     if (userName == null) {
+                        socket.close();
                         return false;
                     } else {
+                        if (userName.isEmpty() || userName.equals("")) {
+                            JOptionPane.showMessageDialog(null, "이름은 공백 설정이 불가능합니다.", "Error", JOptionPane.ERROR_MESSAGE);
+                            socket.close();
+                            return false;
+                        }
                         // 이름 검사를 한 후에 init message를 보냄
                         sListeners.get(0).checkUserName(socket);
                         return true;
@@ -91,6 +98,8 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
 
     @Override
     public void disConnect() {
+        setName("");
+        setRoomName("");
         if (socketAvailable()) {
             try {
                 socket.close();
@@ -130,6 +139,16 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public String getRoomName() {
+        return roomName;
+    }
+
+    @Override
+    public void setRoomName(String name) {
+        this.roomName = name;
     }
 
     public void addChatSocketListener(ChatSocketListener lsnr) {
