@@ -76,7 +76,11 @@ public class ChatClient extends WindowAdapter implements ChatConnector {
                         socket.close();
                         return false;
                     } else {
-                        System.out.println("Enter userName 값 : " + userName);
+                        if (userName.isEmpty() || userName.equals("")) {
+                            JOptionPane.showMessageDialog(null, "이름은 공백 설정이 불가능합니다.", "Error", JOptionPane.ERROR_MESSAGE);
+                            socket.close();
+                            return false;
+                        }
                         // 이름 검사를 한 후에 init message를 보냄
                         sListeners.get(0).checkUserName(socket);
                         return true;
