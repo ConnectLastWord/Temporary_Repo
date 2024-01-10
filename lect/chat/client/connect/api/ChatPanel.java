@@ -195,13 +195,20 @@ public class ChatPanel extends JPanel implements MessageReceiver, ActionListener
                 displayRoomSizeList(msg);
                 break;
             case ChatCommandUtil.LOGIN:
-                if (msg.equals("false")) {
+                if (msg.equals("duplicated")) {
                     JOptionPane.showMessageDialog(this, "이미 존재하는 닉네임", "Login Fail",
                             JOptionPane.WARNING_MESSAGE);
                     connector.disConnect();
                     connectDisconnect.toButton(CommandButton.CMD_CONNECT);
                     room = null;
-                } else {
+                } else if(msg.equals("anonymous")) {
+                    JOptionPane.showMessageDialog(this, "익명 닉네임을 사용할 수 없습니다", "Login Fail",
+                            JOptionPane.WARNING_MESSAGE);
+                    connector.disConnect();
+                    connectDisconnect.toButton(CommandButton.CMD_CONNECT);
+                    room = null;
+                }
+                else{
                     // user이름을 받아 statusBar에 설정
                     StatusBar statusBar = StatusBar.getStatusBar();
                     statusBar.setUserName(msg);

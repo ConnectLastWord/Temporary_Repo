@@ -24,8 +24,11 @@ public class UserController implements Controller {
                 String[] nameWithId = msg.split("\\|");
                 // user 이름이 이미 존재하는 경우
                 if (uM.isContains(nameWithId[0])) {
-                    sendMessage(createMessage(ChatCommandUtil.LOGIN, "false"));
-                } else {
+                    sendMessage(createMessage(ChatCommandUtil.LOGIN, "duplicated"));
+                } else if(nameWithId[0].startsWith("anonymous") || nameWithId[0].startsWith("Anonymous")) {
+                    sendMessage(createMessage(ChatCommandUtil.LOGIN, "anonymous"));
+                }
+                else{
                     MessageHandlerImpl.req.get().setChatName(nameWithId[0]);
                     MessageHandlerImpl.req.get().setId(nameWithId[1]);
                     System.out.println(MessageHandlerImpl.req
